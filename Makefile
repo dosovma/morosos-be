@@ -1,5 +1,5 @@
 STACK_NAME ?= morosos
-FUNCTIONS := agreement-get agreement-create
+FUNCTIONS := agreement-get agreement-create apartment-get apartment-create
 REGION := eu-north-1
 
 # To try different version of Go
@@ -35,7 +35,9 @@ build-gcc-optimized-%:
 zip:
 	cd functions/agreement-get/
 	zip agreement-get.zip bootstrap
-	zip agreement-create.zip bootstra
+	zip agreement-create.zip bootstrap
+	zip apartment-get.zip bootstrap
+	zip apartment-create.zip bootstrap
 
 invoke:
 	@sam local invoke --env-vars env-vars.json GetProductsFunction

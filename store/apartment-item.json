@@ -1,0 +1,45 @@
+{
+  "id": {
+    "S": "e68d0aac-90f8-417e-b284-23a7568dc597"
+  },
+  "devices": {
+    "L": [
+      {
+        "M": {
+          "id": {
+            "S": "dfsdfsdf"
+          },
+          "name": {
+            "S": "device name 1"
+          },
+          "on": {
+            "BOOL": false
+          }
+        }
+      },
+      {
+        "M": {
+          "id": {
+            "S": "2sdfsdfs"
+          },
+          "name": {
+            "S": "device name 2"
+          },
+          "on": {
+            "BOOL": true
+          }
+        }
+      }
+    ]
+  },
+  "landlord": {
+    "M": {
+      "name": {
+        "S": "Mikhail"
+      },
+      "surname": {
+        "S": "Dosov"
+      }
+    }
+  }
+}

@@ -1,14 +1,15 @@
 package types
 
-//go:generate mockgen -destination=./mocks/mock_store.go -package=mocks github.com/aws-samples/serverless-go-demo/types Store
-
 import (
 	"context"
 )
 
-type Store interface {
-	All(context.Context, *string) (AgreementRange, error)
-	Get(context.Context, string) (*Agreement, error)
-	Put(context.Context, Agreement) error
-	Delete(context.Context, string) error
+type AgreementStore interface {
+	AgreementGet(context.Context, string) (*Agreement, error)
+	AgreementPut(context.Context, Agreement) error
+}
+
+type ApartmentStore interface {
+	ApartmentGet(context.Context, string) (*Apartment, error)
+	ApartmentPut(context.Context, Apartment) error
 }

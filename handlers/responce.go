@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -10,7 +9,6 @@ import (
 
 func response(code int, object interface{}) events.APIGatewayProxyResponse {
 	marshalled, err := json.Marshal(object)
-	log.Printf("marshaled ::: %s", marshalled)
 	if err != nil {
 		return errResponse(http.StatusInternalServerError, err.Error())
 	}

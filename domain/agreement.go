@@ -10,17 +10,17 @@ import (
 )
 
 type Agreement struct {
-	store types.Store
+	store types.AgreementStore
 }
 
-func NewAgreementDomain(s types.Store) *Agreement {
+func NewAgreementDomain(s types.AgreementStore) *Agreement {
 	return &Agreement{
 		store: s,
 	}
 }
 
 func (a *Agreement) GetAgreement(ctx context.Context, id string) (*types.Agreement, error) {
-	agreement, err := a.store.Get(ctx, id)
+	agreement, err := a.store.AgreementGet(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("%w", err)
 	}
@@ -29,12 +29,11 @@ func (a *Agreement) GetAgreement(ctx context.Context, id string) (*types.Agreeme
 }
 
 func (a *Agreement) CreateAgreement(ctx context.Context, agreement types.Agreement) (string, error) {
-	agreement.Id = uuid.New().String()
+	agreement.ID = uuid.New().String()
 
-	err := a.store.Put(ctx, agreement)
-	if err != nil {
+	if err := a.store.AgreementPut(ctx, agreement); err != nil {
 		return "", fmt.Errorf("%w", err)
 	}
 
-	return agreement.Id, nil
+	return agreement.ID, nil
 }
