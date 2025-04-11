@@ -1,5 +1,5 @@
 STACK_NAME ?= morosos
-FUNCTIONS := agreement-get agreement-create apartment-get apartment-create
+FUNCTIONS := agreement-get agreement-create agreement-status apartment-get apartment-create
 REGION := eu-north-1
 
 # To try different version of Go

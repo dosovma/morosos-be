@@ -10,17 +10,19 @@ import (
 )
 
 type Agreement struct {
-	store types.AgreementStore
+	agreementStore types.AgreementStore
+	apartStore     types.ApartmentStore
 }
 
-func NewAgreementDomain(s types.AgreementStore) *Agreement {
+func NewAgreementDomain(agStore types.AgreementStore, apartStore types.ApartmentStore) *Agreement {
 	return &Agreement{
-		store: s,
+		agreementStore: agStore,
+		apartStore:     apartStore,
 	}
 }
 
 func (a *Agreement) GetAgreement(ctx context.Context, id string) (*types.Agreement, error) {
-	agreement, err := a.store.AgreementGet(ctx, id)
+	agreement, err := a.agreementStore.AgreementGet(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("%w", err)
 	}
@@ -31,9 +33,14 @@ func (a *Agreement) GetAgreement(ctx context.Context, id string) (*types.Agreeme
 func (a *Agreement) CreateAgreement(ctx context.Context, agreement types.Agreement) (string, error) {
 	agreement.ID = uuid.New().String()
 
-	if err := a.store.AgreementPut(ctx, agreement); err != nil {
+	if err := a.agreementStore.AgreementPut(ctx, agreement); err != nil {
 		return "", fmt.Errorf("%w", err)
 	}
 
 	return agreement.ID, nil
+}
+
+func (a *Agreement) SignAgreement(ctx context.Context, id string) error {
+	//TODO fetch apartment devices and turn it on
+	return nil
 }

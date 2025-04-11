@@ -56,3 +56,14 @@ func (l *AgreementHandler) CreateHandler(ctx context.Context, event events.APIGa
 		return response(http.StatusOK, id), nil
 	}
 }
+
+func (l *AgreementHandler) StatusHandler(ctx context.Context, event events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	//TODO check action start process sign
+
+	if err := l.agreement.SignAgreement(ctx, "id"); err != nil {
+		return errResponse(http.StatusInternalServerError, err.Error()), nil
+	}
+
+	return response(http.StatusOK, nil), nil
+
+}
