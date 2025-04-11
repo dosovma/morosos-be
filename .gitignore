@@ -8,6 +8,8 @@
 *.so
 *.dylib
 .DS_Store
+*.zip
+bootstrap
 
 # Folders
 _obj

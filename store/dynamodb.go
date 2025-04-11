@@ -3,7 +3,6 @@ package store
 import (
 	"context"
 	"fmt"
-	"github.com/dosovma/morosos-be/types"
 	"log"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -11,6 +10,8 @@ import (
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	ddbtypes "github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
+
+	"github.com/dosovma/morosos-be/types"
 )
 
 type DynamoDBStore struct {
@@ -79,6 +80,8 @@ func (d *DynamoDBStore) Get(ctx context.Context, id string) (*types.Agreement, e
 		},
 	})
 
+	log.Printf("get item sucess: %v", response)
+
 	if err != nil {
 		return nil, fmt.Errorf("failed to get item from DynamoDB: %w", err)
 	}
@@ -97,10 +100,10 @@ func (d *DynamoDBStore) Get(ctx context.Context, id string) (*types.Agreement, e
 	return &Agreement, nil
 }
 
-func (d *DynamoDBStore) Put(ctx context.Context, Agreement types.Agreement) error {
-	item, err := attributevalue.MarshalMap(&Agreement)
+func (d *DynamoDBStore) Put(ctx context.Context, agreement types.Agreement) error {
+	item, err := attributevalue.MarshalMap(&agreement)
 	if err != nil {
-		return fmt.Errorf("unable to marshal Agreement: %w", err)
+		return fmt.Errorf("unable to marshal agreement: %w", err)
 	}
 
 	_, err = d.client.PutItem(ctx, &dynamodb.PutItemInput{

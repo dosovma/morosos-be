@@ -2,15 +2,11 @@ package domain
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
-	"github.com/dosovma/morosos-be/types"
-)
+	"github.com/google/uuid"
 
-var (
-	ErrJsonUnmarshal     = errors.New("failed to parse product from request body")
-	ErrProductIdMismatch = errors.New("product ID in path does not match product ID in body")
+	"github.com/dosovma/morosos-be/types"
 )
 
 type Agreement struct {
@@ -24,19 +20,21 @@ func NewAgreementDomain(s types.Store) *Agreement {
 }
 
 func (a *Agreement) GetAgreement(ctx context.Context, id string) (*types.Agreement, error) {
-	product, err := a.store.Get(ctx, id)
+	agreement, err := a.store.Get(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("%w", err)
 	}
 
-	return product, nil
+	return agreement, nil
 }
 
-func (a *Agreement) CreateAgreement(ctx context.Context, id string) (*types.Agreement, error) {
-	product, err := a.store.Get(ctx, id)
+func (a *Agreement) CreateAgreement(ctx context.Context, agreement types.Agreement) (string, error) {
+	agreement.Id = uuid.New().String()
+
+	err := a.store.Put(ctx, agreement)
 	if err != nil {
-		return nil, fmt.Errorf("%w", err)
+		return "", fmt.Errorf("%w", err)
 	}
 
-	return product, nil
+	return agreement.Id, nil
 }
