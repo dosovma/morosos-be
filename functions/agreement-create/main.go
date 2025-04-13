@@ -11,8 +11,9 @@ import (
 )
 
 func main() {
-	dynamodb := store.NewAgreementDynamoDBStore(context.TODO(), "agreements")
-	agreementDomain := domain.NewAgreementDomain(dynamodb)
+	agreementStore := store.NewAgreementDynamoDBStore(context.TODO(), "agreements")
+	apartmentStore := store.NewApartmentDynamoDBStore(context.TODO(), "apartments")
+	agreementDomain := domain.NewAgreementDomain(agreementStore, apartmentStore)
 	handler := handlers.NewAgreementHandler(agreementDomain)
 
 	lambda.Start(handler.CreateHandler)

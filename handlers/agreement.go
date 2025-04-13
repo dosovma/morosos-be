@@ -58,10 +58,23 @@ func (l *AgreementHandler) CreateHandler(ctx context.Context, event events.APIGa
 }
 
 func (l *AgreementHandler) StatusHandler(ctx context.Context, event events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	//TODO check action start process sign
-
-	if err := l.agreement.SignAgreement(ctx, "id"); err != nil {
+	var status types.Status
+	if err := json.Unmarshal([]byte(event.Body), &status); err != nil {
 		return errResponse(http.StatusInternalServerError, err.Error()), nil
+	}
+
+	id, ok := event.QueryStringParameters["id"]
+	if !ok {
+		return errResponse(http.StatusBadRequest, "missing 'id' query parameter"), nil
+	}
+
+	switch status.Action {
+	case types.Sign:
+		if err := l.agreement.SignAgreement(ctx, id); err != nil {
+			return errResponse(http.StatusInternalServerError, err.Error()), nil
+		}
+	default:
+		return errResponse(http.StatusBadRequest, "invalid action type"), nil
 	}
 
 	return response(http.StatusOK, nil), nil

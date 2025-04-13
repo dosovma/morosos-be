@@ -3,6 +3,7 @@ package domain
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/google/uuid"
 
@@ -41,6 +42,22 @@ func (a *Agreement) CreateAgreement(ctx context.Context, agreement types.Agreeme
 }
 
 func (a *Agreement) SignAgreement(ctx context.Context, id string) error {
-	//TODO fetch apartment devices and turn it on
+	agreement, err := a.agreementStore.AgreementGet(ctx, id)
+	if err != nil {
+		return fmt.Errorf("%w", err)
+	}
+
+	apartment, err := a.apartStore.ApartmentGet(ctx, agreement.ApartmentID)
+	if err != nil {
+		return fmt.Errorf("%w", err)
+	}
+
+	for _, device := range apartment.Devices {
+		// invoke tuya client to turnOn devices
+		// use agreement elapsed_at to set up devices
+
+		log.Printf("device name: %s", device.Name)
+	}
+
 	return nil
 }

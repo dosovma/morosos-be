@@ -3,12 +3,12 @@ package handlers
 import (
 	"context"
 	"encoding/json"
-	"github.com/dosovma/morosos-be/types"
 	"net/http"
 
 	"github.com/aws/aws-lambda-go/events"
 
 	"github.com/dosovma/morosos-be/domain"
+	"github.com/dosovma/morosos-be/types"
 )
 
 type ApartmentHandler struct {
@@ -56,4 +56,32 @@ func (l *ApartmentHandler) CreateHandler(ctx context.Context, event events.APIGa
 	} else {
 		return response(http.StatusOK, id), nil
 	}
+}
+
+func (l *ApartmentHandler) StatusHandler(ctx context.Context, event events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	var status types.Status
+	if err := json.Unmarshal([]byte(event.Body), &status); err != nil {
+		return errResponse(http.StatusInternalServerError, err.Error()), nil
+	}
+
+	apartID, ok := event.QueryStringParameters["id"]
+	if !ok {
+		return errResponse(http.StatusBadRequest, "missing 'id' query parameter"), nil
+	}
+
+	switch status.Action {
+	case types.ApartmentOff:
+		if err := l.apartment.TurnOffDevices(ctx, apartID); err != nil {
+			return errResponse(http.StatusInternalServerError, err.Error()), nil
+		}
+	case types.ApartmentOn:
+		if err := l.apartment.TurnOnDevices(ctx, apartID); err != nil {
+			return errResponse(http.StatusInternalServerError, err.Error()), nil
+		}
+	default:
+		return errResponse(http.StatusBadRequest, "invalid action type"), nil
+	}
+
+	return response(http.StatusOK, nil), nil
+
 }

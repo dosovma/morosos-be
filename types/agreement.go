@@ -23,3 +23,15 @@ type Device struct {
 	Name string `dynamodbav:"name" json:"name"`
 	IsOn bool   `dynamodbav:"on" json:"on"`
 }
+
+type Status struct {
+	Action Action
+}
+
+type Action = string
+
+const (
+	Sign         Action = "sign"
+	ApartmentOff Action = "apartment_off"
+	ApartmentOn  Action = "apartment_on"
+)
