@@ -8,6 +8,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue v1.18.9
 	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.42.1
 	github.com/google/uuid v1.6.0
+	github.com/tuya/tuya-connector-go v1.0.5
 )
 
 require (
@@ -25,4 +26,12 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.30.1 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sts v1.33.18 // indirect
 	github.com/aws/smithy-go v1.22.2 // indirect
+	github.com/golang/protobuf v1.3.3 // indirect
+	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
+	github.com/satori/go.uuid v1.2.0 // indirect
+	github.com/sirupsen/logrus v1.3.0 // indirect
+	github.com/tuya/pulsar-client-go v0.0.0-20210318030624-2c99a816287b // indirect
+	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9 // indirect
+	golang.org/x/sys v0.0.0-20200116001909-b77594299b42 // indirect
+	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
 )

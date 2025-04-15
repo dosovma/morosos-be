@@ -12,12 +12,14 @@ import (
 )
 
 type Apartment struct {
-	store types.ApartmentStore
+	store      types.ApartmentStore
+	tyuaClient types.TuyaClient
 }
 
-func NewApartmentDomain(s types.ApartmentStore) *Apartment {
+func NewApartmentDomain(s types.ApartmentStore, t types.TuyaClient) *Apartment {
 	return &Apartment{
-		store: s,
+		store:      s,
+		tyuaClient: t,
 	}
 }
 
@@ -55,6 +57,10 @@ func (a *Apartment) TurnOffDevices(ctx context.Context, id string) error {
 		apartment.Devices[i].IsOn = false
 
 		log.Printf("device name ::: %s", device.Name)
+
+		if err = a.tyuaClient.PostDevice("vdevo174111102058365"); err != nil {
+			log.Printf("failed to action device ::: %s", "vdevo174111102058365")
+		}
 	}
 
 	log.Printf("apartment ::: %v", apartment)

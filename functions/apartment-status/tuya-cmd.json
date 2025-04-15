@@ -1,0 +1,28 @@
+{
+  "commands": [
+    {
+      "code": "switch_led_1",
+      "value": false
+    },
+    {
+      "code": "bright_value_1",
+      "value": 10
+    },
+    {
+      "code": "brightness_min_1",
+      "value": 50
+    },
+    {
+      "code": "led_type_1",
+      "value": "halogen"
+    },
+    {
+      "code": "brightness_max_1",
+      "value": 80
+    },
+    {
+      "code": "countdown_1",
+      "value": 5
+    }
+  ]
+}
