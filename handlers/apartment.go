@@ -27,7 +27,6 @@ func (l *ApartmentHandler) GetHandler(ctx context.Context, event events.APIGatew
 		return errResponse(http.StatusBadRequest, "missing 'id' query parameter"), nil
 	}
 
-	//TODO change to 02361642-acf1-41db-a894-015b8db70e4d to get prepared apartment from db
 	apartment, err := l.apartment.GetApartment(ctx, id)
 	if err != nil {
 		return errResponse(http.StatusInternalServerError, err.Error()), nil

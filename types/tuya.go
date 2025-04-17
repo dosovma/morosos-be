@@ -1,5 +1,5 @@
 package types
 
 type TuyaClient interface {
-	PostDevice(string) error
+	PostDevice(string, bool) error
 }

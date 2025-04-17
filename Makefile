@@ -11,14 +11,17 @@ GCCGO := aarch64-linux-gnu-gccgo-10
 
 ci: build tests-unit
 
-mybuild:
-	GOOS=linux GOARCH=arm64 go build -tags lambda.norpc -o functions/agreement-get/bootstrap functions/agreement-get/main.go
-
 build:
 		${MAKE} ${MAKEOPTS} $(foreach function,${FUNCTIONS}, build-${function})
 
 build-%:
 		cd functions/$* && GOOS=linux GOARCH=arm64 CGO_ENABLED=0 ${GO} build -o bootstrap
+
+zip:
+		${MAKE} ${MAKEOPTS} $(foreach function,${FUNCTIONS}, zip-${function})
+
+zip-%:
+	cd functions/$* && zip $*.zip bootstrap
 
 build-gcc:
 		${MAKE} ${MAKEOPTS} $(foreach function,${FUNCTIONS}, build-gcc-${function})
@@ -32,20 +35,17 @@ build-gcc-optimized:
 build-gcc-optimized-%:
 		cd functions/$* && GOOS=linux GOARCH=arm64 GCCGO=${GCCGO} ${GO} build -compiler gccgo -gccgoflags '-static -Ofast -march=armv8.2-a+fp16+rcpc+dotprod+crypto -mtune=neoverse-n1 -moutline-atomics' -o bootstrap
 
-zip:
-	cd functions/agreement-get/
-	zip agreement-get.zip bootstrap
-	zip agreement-create.zip bootstrap
-	zip agreement-status.zip bootstrap
-	zip apartment-get.zip bootstrap
-	zip apartment-create.zip bootstrap
-	zip apartment-status.zip bootstrap
-
 invoke:
+	aws lambda invoke \
+	--function-name apartment-status \
+	--payload file://functions/apartment-status/event.json ./apartment-status/outputfile.txt \
+	--cli-binary-format raw-in-base64-out
+
+invoke-1:
 	@sam local invoke --env-vars env-vars.json GetProductsFunction
 
-invoke-put:
-	@sam local invoke --env-vars env-vars.json --event functions/put-product/event.json PutProductFunction
+invoke-apartment-status:
+	@sam local invoke --event functions/apartment-status/event.json ApartmentStatus
 
 invoke-get:
 	@sam local invoke --env-vars env-vars.json --event functions/get-product/event.json GetProductFunction

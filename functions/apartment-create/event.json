@@ -5,13 +5,13 @@
   },
   "devices": [
     {
-      "id": "dfsdfsdf",
-      "name": "device name 1",
-      "on": false
+      "id": "vdevo174111102058365",
+      "name": "in wall dimmer",
+      "on": true
     },
     {
-      "id": "2sdfsdfs",
-      "name": "device name 2",
+      "id": "vdevo174489686258065",
+      "name": "3 way smart switch-vdevo",
       "on": true
     }
   ]

@@ -1,3 +1,7 @@
 {
   "action": "apartment_off"
 }
+
+{
+  "action": "apartment_on"
+}

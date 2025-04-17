@@ -53,14 +53,13 @@ func (a *Apartment) TurnOffDevices(ctx context.Context, id string) error {
 	}
 
 	for i, device := range apartment.Devices {
-		// invoke tuya client to turnOff devices
-		apartment.Devices[i].IsOn = false
+		if err = a.tyuaClient.PostDevice(device.ID, false); err != nil {
+			log.Printf("failed to action device ::: %s", device.ID)
 
-		log.Printf("device name ::: %s", device.Name)
-
-		if err = a.tyuaClient.PostDevice("vdevo174111102058365"); err != nil {
-			log.Printf("failed to action device ::: %s", "vdevo174111102058365")
+			return err
 		}
+
+		apartment.Devices[i].IsOn = false
 	}
 
 	log.Printf("apartment ::: %v", apartment)
@@ -79,10 +78,13 @@ func (a *Apartment) TurnOnDevices(ctx context.Context, id string) error {
 	}
 
 	for i, device := range apartment.Devices {
-		// invoke tuya client to turnOff devices
-		apartment.Devices[i].IsOn = true
+		if err = a.tyuaClient.PostDevice(device.ID, true); err != nil {
+			log.Printf("failed to action device ::: %s", device.ID)
 
-		log.Printf("device name ::: %s", device.Name)
+			return err
+		}
+
+		apartment.Devices[i].IsOn = true
 	}
 
 	log.Printf("apartment ::: %v", apartment)

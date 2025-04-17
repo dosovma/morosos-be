@@ -12,7 +12,7 @@ import (
 
 func main() {
 	dynamodb := store.NewApartmentDynamoDBStore(context.TODO(), "apartments")
-	apartmentDomain := domain.NewApartmentDomain(dynamodb)
+	apartmentDomain := domain.NewApartmentDomain(dynamodb, nil)
 	handler := handlers.NewApartmentHandler(apartmentDomain)
 
 	lambda.Start(handler.CreateHandler)
