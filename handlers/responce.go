@@ -7,10 +7,10 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 )
 
-func response(code int, object interface{}) events.APIGatewayProxyResponse {
+func proxyResponse(code int, object interface{}) events.APIGatewayProxyResponse {
 	marshalled, err := json.Marshal(object)
 	if err != nil {
-		return errResponse(http.StatusInternalServerError, err.Error())
+		return errProxyResponse(http.StatusInternalServerError, err.Error())
 	}
 
 	return events.APIGatewayProxyResponse{
@@ -24,7 +24,7 @@ func response(code int, object interface{}) events.APIGatewayProxyResponse {
 	}
 }
 
-func errResponse(status int, body string) events.APIGatewayProxyResponse {
+func errProxyResponse(status int, body string) events.APIGatewayProxyResponse {
 	message := map[string]string{
 		"message": body,
 	}
