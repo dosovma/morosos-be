@@ -1,0 +1,67 @@
+//
+// AGREEMENT
+//
+
+###
+POST https://j4mc0vpyp2.execute-api.eu-north-1.amazonaws.com/test/api/v1/agreements
+Content-Type: application/json
+
+{
+  "tenant": {
+    "name": "Mikhail",
+    "surname": "Dosov"
+  },
+  "start_at": "2025-04-10",
+  "apartment": "65c87ef1-5917-47cb-9e97-235d257bae06",
+  "elapsed_at": "2025-04-10"
+}
+
+###
+GET https://j4mc0vpyp2.execute-api.eu-north-1.amazonaws.com/test/api/v1/agreements/ae085490-8813-40f8-ab38-2b17d815fbd8
+
+###
+POST https://j4mc0vpyp2.execute-api.eu-north-1.amazonaws.com/test/api/v1/agreements/ae085490-8813-40f8-ab38-2b17d815fbd8/status
+Content-Type: application/json
+
+{
+  "action": "sign"
+}
+
+###
+//
+// APARTMENT
+//
+
+###
+POST https://j4mc0vpyp2.execute-api.eu-north-1.amazonaws.com/test/api/v1/apartments
+Content-Type: application/json
+
+{
+  "landlord": {
+    "name": "Mikhail",
+    "surname": "Dosov"
+  },
+  "devices": [
+    {
+      "id": "vdevo174111102058365",
+      "name": "in wall dimmer",
+      "on": true
+    },
+    {
+      "id": "vdevo174489686258065",
+      "name": "3 way smart switch-vdevo",
+      "on": true
+    }
+  ]
+}
+
+###
+GET https://j4mc0vpyp2.execute-api.eu-north-1.amazonaws.com/test/api/v1/apartments/227a77a3-ee4a-4b5e-b170-cb56e6c829c7
+
+###
+POST https://j4mc0vpyp2.execute-api.eu-north-1.amazonaws.com/test/api/v1/apartments/227a77a3-ee4a-4b5e-b170-cb56e6c829c7/status
+Content-Type: application/json
+
+{
+  "action": "apartment_off"
+}

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
@@ -35,12 +36,13 @@ func NewAgreementDynamoDBStore(ctx context.Context, tableName string) *Agreement
 }
 
 func (d *AgreementDynamoDBStore) AgreementGet(ctx context.Context, id string) (*types.Agreement, error) {
-	response, err := d.client.GetItem(ctx, &dynamodb.GetItemInput{
-		TableName: &d.tableName,
-		Key: map[string]ddbtypes.AttributeValue{
-			"id": &ddbtypes.AttributeValueMemberS{Value: id},
+	response, err := d.client.GetItem(
+		ctx, &dynamodb.GetItemInput{
+			TableName: &d.tableName,
+			Key: map[string]ddbtypes.AttributeValue{
+				"id": &ddbtypes.AttributeValueMemberS{Value: id},
+			},
 		},
-	},
 	)
 
 	log.Printf("get item sucess: %v", response)
@@ -53,17 +55,19 @@ func (d *AgreementDynamoDBStore) AgreementGet(ctx context.Context, id string) (*
 		return nil, nil
 	}
 
-	Agreement := types.Agreement{}
-	err = attributevalue.UnmarshalMap(response.Item, &Agreement)
+	agreement := types.Agreement{}
+	err = attributevalue.UnmarshalMap(response.Item, &agreement)
 
 	if err != nil {
 		return nil, fmt.Errorf("error getting item %w", err)
 	}
 
-	return &Agreement, nil
+	return &agreement, nil
 }
 
 func (d *AgreementDynamoDBStore) AgreementPut(ctx context.Context, agreement types.Agreement) error {
+	agreement.UpdatedAt = time.Now().String()
+
 	item, err := attributevalue.MarshalMap(&agreement)
 	if err != nil {
 		return fmt.Errorf("unable to marshal agreement: %w", err)

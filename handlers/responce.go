@@ -16,7 +16,10 @@ func proxyResponse(code int, object interface{}) events.APIGatewayProxyResponse 
 	return events.APIGatewayProxyResponse{
 		StatusCode: code,
 		Headers: map[string]string{
-			"Content-Type": "application/json",
+			"Content-Type":                 "application/json",
+			"Access-Control-Allow-Origin":  "*",
+			"Access-Control-Allow-Headers": "Content-Type,Authorization",
+			"Access-Control-Allow-Methods": "OPTIONS,POST,GET",
 		},
 		MultiValueHeaders: nil,
 		Body:              string(marshalled),
@@ -34,7 +37,10 @@ func errProxyResponse(status int, body string) events.APIGatewayProxyResponse {
 	return events.APIGatewayProxyResponse{
 		StatusCode: status,
 		Headers: map[string]string{
-			"Content-Type": "application/json",
+			"Content-Type":                 "application/json",
+			"Access-Control-Allow-Origin":  "*",
+			"Access-Control-Allow-Headers": "Content-Type,Authorization",
+			"Access-Control-Allow-Methods": "OPTIONS,POST,GET",
 		},
 		Body: string(messageBytes),
 	}

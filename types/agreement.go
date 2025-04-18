@@ -2,7 +2,9 @@ package types
 
 type Agreement struct {
 	ID          string `dynamodbav:"id" json:"id"`
+	StartAt     string `dynamodbav:"start_at" json:"start_at"`
 	ElapsedAt   string `dynamodbav:"elapsed_at" json:"elapsed_at"`
+	UpdatedAt   string `dynamodbav:"updated_at" json:"updated_at"`
 	Tenant      User   `dynamodbav:"tenant" json:"tenant"`
 	ApartmentID string `dynamodbav:"apartment" json:"apartment"`
 }
