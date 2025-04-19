@@ -28,6 +28,8 @@ func (a *Agreement) GetAgreement(ctx context.Context, id string) (*types.Agreeme
 		return nil, fmt.Errorf("%w", err)
 	}
 
+	agreement.Text = agreementText(*agreement)
+
 	return agreement, nil
 }
 
@@ -67,4 +69,14 @@ func (a *Agreement) SignAgreement(ctx context.Context, id string) error {
 	}
 
 	return nil
+}
+
+func agreementText(agreement types.Agreement) string {
+	return fmt.Sprintf(
+		"Я, имя %s фамилия %s, подписываю это соглашение, находясь в здравом уме. Дата старта соглашения: %s. Дата окончания соглашения: %s",
+		agreement.Tenant.Name,
+		agreement.Tenant.Surname,
+		agreement.StartAt,
+		agreement.ElapsedAt,
+	)
 }

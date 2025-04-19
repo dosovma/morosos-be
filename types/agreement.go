@@ -15,6 +15,7 @@ type Agreement struct {
 	Tenant      User            `dynamodbav:"tenant" json:"tenant"`
 	ApartmentID string          `dynamodbav:"apartment" json:"apartment"`
 	Status      AgreementStatus `dynamodbav:"status" json:"status"`
+	Text        string          `dynamodbav:"text" json:"text"` // TODO move out from entity to service layer
 }
 
 type Apartment struct {
