@@ -33,6 +33,7 @@ func (a *Agreement) GetAgreement(ctx context.Context, id string) (*types.Agreeme
 
 func (a *Agreement) CreateAgreement(ctx context.Context, agreement types.Agreement) (string, error) {
 	agreement.ID = uuid.New().String()
+	agreement.Status = types.Draft
 
 	if err := a.agreementStore.AgreementPut(ctx, agreement); err != nil {
 		return "", fmt.Errorf("%w", err)
@@ -53,10 +54,16 @@ func (a *Agreement) SignAgreement(ctx context.Context, id string) error {
 	}
 
 	for _, device := range apartment.Devices {
+		// TODO
 		// invoke tuya client to turnOn devices
 		// use agreement elapsed_at to set up devices
 
 		log.Printf("device name: %s", device.Name)
+	}
+
+	agreement.Status = types.Signed
+	if err = a.agreementStore.AgreementPut(ctx, *agreement); err != nil {
+		return fmt.Errorf("%w", err)
 	}
 
 	return nil

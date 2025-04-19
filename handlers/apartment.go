@@ -53,7 +53,11 @@ func (l *ApartmentHandler) CreateHandler(ctx context.Context, event events.APIGa
 	if id == "" {
 		return errProxyResponse(http.StatusNotFound, "apartment not found"), nil
 	} else {
-		return proxyResponse(http.StatusOK, id), nil
+		return proxyResponse(
+			http.StatusOK, createApartmentResp{
+				ApartmentID: id,
+			},
+		), nil
 	}
 }
 
@@ -81,6 +85,6 @@ func (l *ApartmentHandler) StatusHandler(ctx context.Context, event events.APIGa
 		return errProxyResponse(http.StatusBadRequest, "invalid action type"), nil
 	}
 
-	return proxyResponse(http.StatusOK, nil), nil
+	return proxyResponse(http.StatusOK, statusApartmentResp{Success: true}), nil
 
 }

@@ -53,7 +53,11 @@ func (l *AgreementHandler) CreateHandler(ctx context.Context, event events.APIGa
 	if id == "" {
 		return errProxyResponse(http.StatusNotFound, "agreement not found"), nil
 	} else {
-		return proxyResponse(http.StatusOK, id), nil
+		return proxyResponse(
+			http.StatusOK, createAgreementResp{
+				AgreementID: id,
+			},
+		), nil
 	}
 }
 
@@ -77,6 +81,5 @@ func (l *AgreementHandler) StatusHandler(ctx context.Context, event events.APIGa
 		return errProxyResponse(http.StatusBadRequest, "invalid action type"), nil
 	}
 
-	return proxyResponse(http.StatusOK, nil), nil
-
+	return proxyResponse(http.StatusOK, statusAgreementResp{Success: true}), nil
 }
