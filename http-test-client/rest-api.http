@@ -12,15 +12,15 @@ Content-Type: application/json
     "surname": "Dosov"
   },
   "start_at": "2025-04-10",
-  "apartment": "65c87ef1-5917-47cb-9e97-235d257bae06",
+  "apartment": "34d08177-e842-4d44-af86-7c2386dda01c",
   "elapsed_at": "2025-04-10"
 }
 
 ###
-GET https://j4mc0vpyp2.execute-api.eu-north-1.amazonaws.com/test/api/v1/agreements/733cda6b-7b3f-42a6-a863-a38eddfebd56
+GET https://j4mc0vpyp2.execute-api.eu-north-1.amazonaws.com/test/api/v1/agreements/c17d4f7d-25f6-4f7d-bf46-2fbc2e0d4da8
 
 ###
-POST https://j4mc0vpyp2.execute-api.eu-north-1.amazonaws.com/test/api/v1/agreements/733cda6b-7b3f-42a6-a863-a38eddfebd56/status
+POST https://j4mc0vpyp2.execute-api.eu-north-1.amazonaws.com/test/api/v1/agreements/c17d4f7d-25f6-4f7d-bf46-2fbc2e0d4da8/status
 Content-Type: application/json
 
 {
@@ -45,21 +45,21 @@ Content-Type: application/json
     {
       "id": "vdevo174111102058365",
       "name": "in wall dimmer",
-      "on": true
+      "on": false
     },
     {
       "id": "vdevo174489686258065",
       "name": "3 way smart switch-vdevo",
-      "on": true
+      "on": false
     }
   ]
 }
 
 ###
-GET https://j4mc0vpyp2.execute-api.eu-north-1.amazonaws.com/test/api/v1/apartments/670f5142-43e5-4fc7-979c-3988cccb4f03
+GET https://j4mc0vpyp2.execute-api.eu-north-1.amazonaws.com/test/api/v1/apartments/34d08177-e842-4d44-af86-7c2386dda01c
 
 ###
-POST https://j4mc0vpyp2.execute-api.eu-north-1.amazonaws.com/test/api/v1/apartments/670f5142-43e5-4fc7-979c-3988cccb4f03/status
+POST https://j4mc0vpyp2.execute-api.eu-north-1.amazonaws.com/test/api/v1/apartments/34d08177-e842-4d44-af86-7c2386dda01c/status
 Content-Type: application/json
 
 {

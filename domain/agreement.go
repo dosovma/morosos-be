@@ -13,12 +13,14 @@ import (
 type Agreement struct {
 	agreementStore types.AgreementStore
 	apartStore     types.ApartmentStore
+	tyuaClient     types.TuyaClient
 }
 
-func NewAgreementDomain(agStore types.AgreementStore, apartStore types.ApartmentStore) *Agreement {
+func NewAgreementDomain(agStore types.AgreementStore, apartStore types.ApartmentStore, client types.TuyaClient) *Agreement {
 	return &Agreement{
 		agreementStore: agStore,
 		apartStore:     apartStore,
+		tyuaClient:     client,
 	}
 }
 
@@ -55,20 +57,25 @@ func (a *Agreement) SignAgreement(ctx context.Context, id string) error {
 		return fmt.Errorf("%w", err)
 	}
 
-	for _, device := range apartment.Devices {
-		// TODO
-		// invoke tuya client to turnOn devices
-		// use agreement elapsed_at to set up devices
+	for i, device := range apartment.Devices {
+		if err = a.tyuaClient.PostDevice(device.ID, true); err != nil {
+			log.Printf("failed to action device ::: %s", device.ID)
 
-		log.Printf("device name: %s", device.Name)
+			return err
+		}
+
+		apartment.Devices[i].IsOn = true
+	}
+
+	if err = a.apartStore.ApartmentPut(ctx, *apartment); err != nil {
+		log.Printf("failed to store apartmnet ::: %s", apartment.ID)
+
+		return err
 	}
 
 	agreement.Status = types.Signed
-	if err = a.agreementStore.AgreementPut(ctx, *agreement); err != nil {
-		return fmt.Errorf("%w", err)
-	}
 
-	return nil
+	return a.agreementStore.AgreementPut(ctx, *agreement)
 }
 
 func agreementText(agreement types.Agreement) string {
