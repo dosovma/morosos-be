@@ -11,7 +11,8 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	ddbtypes "github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 
-	"github.com/dosovma/morosos-be/types"
+	"github.com/dosovma/morosos-be/domain/entity"
+	"github.com/dosovma/morosos-be/ports"
 )
 
 type AgreementDynamoDBStore struct {
@@ -19,7 +20,7 @@ type AgreementDynamoDBStore struct {
 	tableName string
 }
 
-var _ types.AgreementStore = (*AgreementDynamoDBStore)(nil)
+var _ ports.AgreementStore = (*AgreementDynamoDBStore)(nil)
 
 func NewAgreementDynamoDBStore(ctx context.Context, tableName string) *AgreementDynamoDBStore {
 	cfg, err := config.LoadDefaultConfig(ctx)
@@ -35,7 +36,7 @@ func NewAgreementDynamoDBStore(ctx context.Context, tableName string) *Agreement
 	}
 }
 
-func (d *AgreementDynamoDBStore) AgreementGet(ctx context.Context, id string) (*types.Agreement, error) {
+func (d *AgreementDynamoDBStore) AgreementGet(ctx context.Context, id string) (*entity.Agreement, error) {
 	response, err := d.client.GetItem(
 		ctx, &dynamodb.GetItemInput{
 			TableName: &d.tableName,
@@ -55,7 +56,7 @@ func (d *AgreementDynamoDBStore) AgreementGet(ctx context.Context, id string) (*
 		return nil, nil
 	}
 
-	agreement := types.Agreement{}
+	agreement := entity.Agreement{}
 	err = attributevalue.UnmarshalMap(response.Item, &agreement)
 
 	if err != nil {
@@ -65,7 +66,7 @@ func (d *AgreementDynamoDBStore) AgreementGet(ctx context.Context, id string) (*
 	return &agreement, nil
 }
 
-func (d *AgreementDynamoDBStore) AgreementPut(ctx context.Context, agreement types.Agreement) error {
+func (d *AgreementDynamoDBStore) AgreementPut(ctx context.Context, agreement entity.Agreement) error {
 	agreement.UpdatedAt = time.Now().String()
 
 	item, err := attributevalue.MarshalMap(&agreement)

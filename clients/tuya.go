@@ -6,12 +6,12 @@ import (
 	tuyasdk "github.com/iot-eco-system/tuya-iot-service-sdk"
 	"github.com/iot-eco-system/tuya-iot-service-sdk/model"
 
-	"github.com/dosovma/morosos-be/types"
+	"github.com/dosovma/morosos-be/ports"
 )
 
 type TuyaClient struct{}
 
-var _ types.TuyaClient = (*TuyaClient)(nil)
+var _ ports.TuyaClient = (*TuyaClient)(nil)
 
 func NewTuyaClient() *TuyaClient {
 	return &TuyaClient{}

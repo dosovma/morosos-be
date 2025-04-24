@@ -8,31 +8,23 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/dosovma/morosos-be/types"
+	"github.com/dosovma/morosos-be/domain/entity"
+	"github.com/dosovma/morosos-be/ports"
 )
 
 type Apartment struct {
-	store      types.ApartmentStore
-	tyuaClient types.TuyaClient
+	store      ports.ApartmentStore
+	tyuaClient ports.TuyaClient
 }
 
-func NewApartmentDomain(s types.ApartmentStore, t types.TuyaClient) *Apartment {
+func NewApartmentDomain(s ports.ApartmentStore, t ports.TuyaClient) *Apartment {
 	return &Apartment{
 		store:      s,
 		tyuaClient: t,
 	}
 }
 
-func (a *Apartment) GetApartment(ctx context.Context, id string) (*types.Apartment, error) {
-	apartment, err := a.store.ApartmentGet(ctx, id)
-	if err != nil {
-		return nil, fmt.Errorf("%w", err)
-	}
-
-	return apartment, nil
-}
-
-func (a *Apartment) CreateApartment(ctx context.Context, apartment types.Apartment) (string, error) {
+func (a *Apartment) CreateApartment(ctx context.Context, apartment entity.Apartment) (string, error) {
 	apartment.ID = uuid.New().String()
 
 	if err := a.store.ApartmentPut(ctx, apartment); err != nil {
@@ -42,32 +34,16 @@ func (a *Apartment) CreateApartment(ctx context.Context, apartment types.Apartme
 	return apartment.ID, nil
 }
 
-func (a *Apartment) TurnOffDevices(ctx context.Context, id string) error {
+func (a *Apartment) GetApartment(ctx context.Context, id string) (*entity.Apartment, error) {
 	apartment, err := a.store.ApartmentGet(ctx, id)
 	if err != nil {
-		return fmt.Errorf("%w", err)
+		return nil, fmt.Errorf("%w", err)
 	}
 
-	if apartment == nil {
-		return errors.New("not found")
-	}
-
-	for i, device := range apartment.Devices {
-		if err = a.tyuaClient.PostDevice(device.ID, false); err != nil {
-			log.Printf("failed to action device ::: %s", device.ID)
-
-			return err
-		}
-
-		apartment.Devices[i].IsOn = false
-	}
-
-	log.Printf("apartment ::: %v", apartment)
-
-	return a.store.ApartmentPut(ctx, *apartment)
+	return apartment, nil
 }
 
-func (a *Apartment) TurnOnDevices(ctx context.Context, id string) error {
+func (a *Apartment) SwitchDevices(ctx context.Context, id string, isOn bool) error {
 	apartment, err := a.store.ApartmentGet(ctx, id)
 	if err != nil {
 		return fmt.Errorf("%w", err)
@@ -78,16 +54,14 @@ func (a *Apartment) TurnOnDevices(ctx context.Context, id string) error {
 	}
 
 	for i, device := range apartment.Devices {
-		if err = a.tyuaClient.PostDevice(device.ID, true); err != nil {
-			log.Printf("failed to action device ::: %s", device.ID)
+		if err = a.tyuaClient.PostDevice(device.ID, isOn); err != nil {
+			log.Printf("failed to turn on device ::: %s", device.ID)
 
 			return err
 		}
 
-		apartment.Devices[i].IsOn = true
+		apartment.Devices[i].IsOn = isOn
 	}
-
-	log.Printf("apartment ::: %v", apartment)
 
 	return a.store.ApartmentPut(ctx, *apartment)
 }

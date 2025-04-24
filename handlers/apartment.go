@@ -8,7 +8,7 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 
 	"github.com/dosovma/morosos-be/domain"
-	"github.com/dosovma/morosos-be/types"
+	"github.com/dosovma/morosos-be/domain/entity"
 )
 
 type ApartmentHandler struct {
@@ -18,6 +18,28 @@ type ApartmentHandler struct {
 func NewApartmentHandler(d *domain.Apartment) *ApartmentHandler {
 	return &ApartmentHandler{
 		apartment: d,
+	}
+}
+
+func (l *ApartmentHandler) CreateHandler(ctx context.Context, event events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	var apartment entity.Apartment
+	if err := json.Unmarshal([]byte(event.Body), &apartment); err != nil {
+		return errProxyResponse(http.StatusInternalServerError, err.Error()), nil
+	}
+
+	id, err := l.apartment.CreateApartment(ctx, apartment)
+	if err != nil {
+		return errProxyResponse(http.StatusInternalServerError, err.Error()), nil
+	}
+
+	if id == "" {
+		return errProxyResponse(http.StatusNotFound, "apartment not found"), nil
+	} else {
+		return proxyResponse(
+			http.StatusOK, createApartmentResp{
+				ApartmentID: id,
+			},
+		), nil
 	}
 }
 
@@ -39,30 +61,8 @@ func (l *ApartmentHandler) GetHandler(ctx context.Context, event events.APIGatew
 	}
 }
 
-func (l *ApartmentHandler) CreateHandler(ctx context.Context, event events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	var apartment types.Apartment
-	if err := json.Unmarshal([]byte(event.Body), &apartment); err != nil {
-		return errProxyResponse(http.StatusInternalServerError, err.Error()), nil
-	}
-
-	id, err := l.apartment.CreateApartment(ctx, apartment)
-	if err != nil {
-		return errProxyResponse(http.StatusInternalServerError, err.Error()), nil
-	}
-
-	if id == "" {
-		return errProxyResponse(http.StatusNotFound, "apartment not found"), nil
-	} else {
-		return proxyResponse(
-			http.StatusOK, createApartmentResp{
-				ApartmentID: id,
-			},
-		), nil
-	}
-}
-
 func (l *ApartmentHandler) StatusHandler(ctx context.Context, event events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	var status types.Status
+	var status entity.Status
 	if err := json.Unmarshal([]byte(event.Body), &status); err != nil {
 		return errProxyResponse(http.StatusInternalServerError, err.Error()), nil
 	}
@@ -73,12 +73,12 @@ func (l *ApartmentHandler) StatusHandler(ctx context.Context, event events.APIGa
 	}
 
 	switch status.Action {
-	case types.ApartmentOff:
-		if err := l.apartment.TurnOffDevices(ctx, id); err != nil {
+	case entity.ApartmentOff:
+		if err := l.apartment.SwitchDevices(ctx, id, false); err != nil {
 			return errProxyResponse(http.StatusInternalServerError, err.Error()), nil
 		}
-	case types.ApartmentOn:
-		if err := l.apartment.TurnOnDevices(ctx, id); err != nil {
+	case entity.ApartmentOn:
+		if err := l.apartment.SwitchDevices(ctx, id, true); err != nil {
 			return errProxyResponse(http.StatusInternalServerError, err.Error()), nil
 		}
 	default:

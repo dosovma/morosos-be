@@ -58,12 +58,13 @@ invoke-stream:
 
 clean:
 	@rm $(foreach function,${FUNCTIONS}, functions/${function}/bootstrap)
+	@rm $(foreach function,${FUNCTIONS}, functions/${function}/${function}.zip)
 
 deploy:
 	if [ -f samconfig.toml ]; \
 		then sam deploy --stack-name ${STACK_NAME}; \
 		else sam deploy -g --stack-name ${STACK_NAME}; \
-  fi
+  	fi
 
 tests-unit:
 	@go test -v -tags=unit -bench=. -benchmem -cover ./...

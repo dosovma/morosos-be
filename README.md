@@ -1,6 +1,3 @@
-Долги:
+Product backlog
 
-- start time поправить
-- проверка статуса предложения перед подписанием
-- крон отключения апартаментов, когда наступает время
-- кнопка отключения/включения апартаментов на странице статуса апартаментов
+https://docs.google.com/spreadsheets/d/1C7V9UHcAvb0VT9K0b7he7J7bUCHviygLGTa3QtQL-ho/edit?usp=sharing

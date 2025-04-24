@@ -3,12 +3,13 @@ package handlers
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/aws/aws-lambda-go/events"
 
 	"github.com/dosovma/morosos-be/domain"
-	"github.com/dosovma/morosos-be/types"
+	"github.com/dosovma/morosos-be/domain/entity"
 )
 
 type AgreementHandler struct {
@@ -18,6 +19,37 @@ type AgreementHandler struct {
 func NewAgreementHandler(d *domain.Agreement) *AgreementHandler {
 	return &AgreementHandler{
 		agreement: d,
+	}
+}
+
+func (l *AgreementHandler) CreateHandler(ctx context.Context, event events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	apartmentID, ok := event.PathParameters["apartment_id"]
+	if !ok {
+		return errProxyResponse(http.StatusBadRequest, "missing 'id' path parameter"), nil
+	}
+
+	var agreement entity.Agreement
+	if err := json.Unmarshal([]byte(event.Body), &agreement); err != nil {
+		return errProxyResponse(http.StatusInternalServerError, err.Error()), nil
+	}
+
+	if err := validate(agreement); err != nil {
+		return errProxyResponse(http.StatusBadRequest, fmt.Sprintf("validation error: %s", err)), nil
+	}
+
+	id, err := l.agreement.CreateAgreement(ctx, apartmentID, agreement)
+	if err != nil {
+		return errProxyResponse(http.StatusInternalServerError, err.Error()), nil
+	}
+
+	if id == "" {
+		return errProxyResponse(http.StatusNotFound, "agreement not found"), nil
+	} else {
+		return proxyResponse(
+			http.StatusOK, createAgreementResp{
+				AgreementID: id,
+			},
+		), nil
 	}
 }
 
@@ -39,30 +71,8 @@ func (l *AgreementHandler) GetHandler(ctx context.Context, event events.APIGatew
 	}
 }
 
-func (l *AgreementHandler) CreateHandler(ctx context.Context, event events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	var agreement types.Agreement
-	if err := json.Unmarshal([]byte(event.Body), &agreement); err != nil {
-		return errProxyResponse(http.StatusInternalServerError, err.Error()), nil
-	}
-
-	id, err := l.agreement.CreateAgreement(ctx, agreement)
-	if err != nil {
-		return errProxyResponse(http.StatusInternalServerError, err.Error()), nil
-	}
-
-	if id == "" {
-		return errProxyResponse(http.StatusNotFound, "agreement not found"), nil
-	} else {
-		return proxyResponse(
-			http.StatusOK, createAgreementResp{
-				AgreementID: id,
-			},
-		), nil
-	}
-}
-
 func (l *AgreementHandler) StatusHandler(ctx context.Context, event events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	var status types.Status
+	var status entity.Status
 	if err := json.Unmarshal([]byte(event.Body), &status); err != nil {
 		return errProxyResponse(http.StatusInternalServerError, err.Error()), nil
 	}
@@ -73,7 +83,7 @@ func (l *AgreementHandler) StatusHandler(ctx context.Context, event events.APIGa
 	}
 
 	switch status.Action {
-	case types.Sign:
+	case entity.Sign:
 		if err := l.agreement.SignAgreement(ctx, id); err != nil {
 			return errProxyResponse(http.StatusInternalServerError, err.Error()), nil
 		}
@@ -82,4 +92,9 @@ func (l *AgreementHandler) StatusHandler(ctx context.Context, event events.APIGa
 	}
 
 	return proxyResponse(http.StatusOK, statusAgreementResp{Success: true}), nil
+}
+
+func validate(agreement entity.Agreement) error {
+	// TODO
+	return nil
 }

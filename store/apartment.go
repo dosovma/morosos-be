@@ -10,7 +10,8 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	ddbtypes "github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 
-	"github.com/dosovma/morosos-be/types"
+	"github.com/dosovma/morosos-be/domain/entity"
+	"github.com/dosovma/morosos-be/ports"
 )
 
 type ApartmentDynamoDBStore struct {
@@ -18,7 +19,7 @@ type ApartmentDynamoDBStore struct {
 	tableName string
 }
 
-var _ types.ApartmentStore = (*ApartmentDynamoDBStore)(nil)
+var _ ports.ApartmentStore = (*ApartmentDynamoDBStore)(nil)
 
 func NewApartmentDynamoDBStore(ctx context.Context, tableName string) *ApartmentDynamoDBStore {
 	cfg, err := config.LoadDefaultConfig(ctx)
@@ -34,7 +35,7 @@ func NewApartmentDynamoDBStore(ctx context.Context, tableName string) *Apartment
 	}
 }
 
-func (d *ApartmentDynamoDBStore) ApartmentGet(ctx context.Context, id string) (*types.Apartment, error) {
+func (d *ApartmentDynamoDBStore) ApartmentGet(ctx context.Context, id string) (*entity.Apartment, error) {
 	response, err := d.client.GetItem(
 		ctx,
 		&dynamodb.GetItemInput{
@@ -53,7 +54,7 @@ func (d *ApartmentDynamoDBStore) ApartmentGet(ctx context.Context, id string) (*
 		return nil, nil
 	}
 
-	apartment := types.Apartment{}
+	apartment := entity.Apartment{}
 	err = attributevalue.UnmarshalMap(response.Item, &apartment)
 
 	if err != nil {
@@ -63,7 +64,7 @@ func (d *ApartmentDynamoDBStore) ApartmentGet(ctx context.Context, id string) (*
 	return &apartment, nil
 }
 
-func (d *ApartmentDynamoDBStore) ApartmentPut(ctx context.Context, apartment types.Apartment) error {
+func (d *ApartmentDynamoDBStore) ApartmentPut(ctx context.Context, apartment entity.Apartment) error {
 	item, err := attributevalue.MarshalMap(&apartment)
 	if err != nil {
 		return fmt.Errorf("unable to marshal apartment: %w", err)

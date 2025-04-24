@@ -3,7 +3,7 @@
 //
 
 ###
-POST https://j4mc0vpyp2.execute-api.eu-north-1.amazonaws.com/test/api/v1/agreements
+POST https://gtw06or8tl.execute-api.eu-north-1.amazonaws.com/test/api/v1/apartments/e3abab76-6c94-419f-a7de-e97a01af62db/agreements
 Content-Type: application/json
 
 {
@@ -11,16 +11,14 @@ Content-Type: application/json
     "name": "Mikhail",
     "surname": "Dosov"
   },
-  "start_at": "2025-04-10",
-  "apartment": "34d08177-e842-4d44-af86-7c2386dda01c",
   "elapsed_at": "2025-04-10"
 }
 
 ###
-GET https://j4mc0vpyp2.execute-api.eu-north-1.amazonaws.com/test/api/v1/agreements/c17d4f7d-25f6-4f7d-bf46-2fbc2e0d4da8
+GET https://gtw06or8tl.execute-api.eu-north-1.amazonaws.com/test/api/v1/apartments/e3abab76-6c94-419f-a7de-e97a01af62db/agreements/849ca586-dbb9-4608-bba3-ab960ed1d532
 
 ###
-POST https://j4mc0vpyp2.execute-api.eu-north-1.amazonaws.com/test/api/v1/agreements/c17d4f7d-25f6-4f7d-bf46-2fbc2e0d4da8/status
+POST https://gtw06or8tl.execute-api.eu-north-1.amazonaws.com/test/api/v1/apartments/e3abab76-6c94-419f-a7de-e97a01af62db/agreements/849ca586-dbb9-4608-bba3-ab960ed1d532/statuses
 Content-Type: application/json
 
 {
@@ -33,7 +31,7 @@ Content-Type: application/json
 //
 
 ###
-POST https://j4mc0vpyp2.execute-api.eu-north-1.amazonaws.com/test/api/v1/apartments
+POST https://gtw06or8tl.execute-api.eu-north-1.amazonaws.com/test/api/v1/apartments
 Content-Type: application/json
 
 {
@@ -41,25 +39,26 @@ Content-Type: application/json
     "name": "Mikhail",
     "surname": "Dosov"
   },
+  "address": "C. de la Confraria de l'Assumpció, 8, 46701 Gandia, Valencia, España. Pl.  02",
   "devices": [
     {
       "id": "vdevo174111102058365",
-      "name": "in wall dimmer",
+      "name": "Electricidad",
       "on": false
     },
     {
       "id": "vdevo174489686258065",
-      "name": "3 way smart switch-vdevo",
+      "name": "Agua",
       "on": false
     }
   ]
 }
 
 ###
-GET https://j4mc0vpyp2.execute-api.eu-north-1.amazonaws.com/test/api/v1/apartments/34d08177-e842-4d44-af86-7c2386dda01c
+GET https://gtw06or8tl.execute-api.eu-north-1.amazonaws.com/test/api/v1/apartments/e3abab76-6c94-419f-a7de-e97a01af62db
 
 ###
-POST https://j4mc0vpyp2.execute-api.eu-north-1.amazonaws.com/test/api/v1/apartments/34d08177-e842-4d44-af86-7c2386dda01c/status
+POST https://gtw06or8tl.execute-api.eu-north-1.amazonaws.com/test/api/v1/apartments/e3abab76-6c94-419f-a7de-e97a01af62db/statuses
 Content-Type: application/json
 
 {
