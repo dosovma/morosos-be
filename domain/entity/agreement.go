@@ -25,6 +25,11 @@ type Apartment struct {
 	Devices  []Device `dynamodbav:"devices" json:"devices"`
 }
 
+type Template struct {
+	Name string `dynamodbav:"name" json:"name"`
+	Text string `dynamodbav:"text" json:"text"`
+}
+
 type User struct {
 	ID      string `dynamodbav:"id" json:"id"`
 	Name    string `dynamodbav:"name" json:"name"`

@@ -22,11 +22,6 @@ type Agreement interface {
 
 // Output
 
-type Store interface {
-	AgreementStore
-	ApartmentStore
-}
-
 type AgreementStore interface {
 	AgreementGet(context.Context, string) (*entity.Agreement, error)
 	AgreementPut(context.Context, entity.Agreement) error
@@ -37,10 +32,18 @@ type ApartmentStore interface {
 	ApartmentPut(context.Context, entity.Apartment) error
 }
 
+type TemplateStore interface {
+	TemplateGet(ctx context.Context, name string) (string, error)
+}
+
 type TuyaClient interface {
 	PostDevice(string, bool) error
 }
 
 type Bus interface {
 	Publish(context.Context, Event) error
+}
+
+type Templater interface {
+	FillTemplate(context.Context, string, any) (string, error)
 }

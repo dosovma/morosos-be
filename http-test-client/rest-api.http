@@ -15,7 +15,7 @@ Content-Type: application/json
 }
 
 ###
-GET https://gtw06or8tl.execute-api.eu-north-1.amazonaws.com/test/api/v1/apartments/e3abab76-6c94-419f-a7de-e97a01af62db/agreements/849ca586-dbb9-4608-bba3-ab960ed1d532
+GET https://gtw06or8tl.execute-api.eu-north-1.amazonaws.com/test/api/v1/apartments/e3abab76-6c94-419f-a7de-e97a01af62db/agreements/def8fb6c-ad3a-4dd4-821c-95c4ee523e11
 
 ###
 POST https://gtw06or8tl.execute-api.eu-north-1.amazonaws.com/test/api/v1/apartments/e3abab76-6c94-419f-a7de-e97a01af62db/agreements/849ca586-dbb9-4608-bba3-ab960ed1d532/statuses

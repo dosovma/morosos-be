@@ -10,19 +10,29 @@ import (
 	"github.com/dosovma/morosos-be/ports"
 )
 
+type templateName = string
+
+const (
+	agreementTemplateName templateName = "agreement"
+)
+
 type Agreement struct {
 	agreementStore ports.AgreementStore
 	apartStore     ports.ApartmentStore
+	templateStore  ports.TemplateStore
 	bus            ports.Bus
 	tyuaClient     ports.TuyaClient
+	templater      ports.Templater
 }
 
-func NewAgreementDomain(agStore ports.AgreementStore, apartStore ports.ApartmentStore, bus ports.Bus, client ports.TuyaClient) *Agreement {
+func NewAgreementDomain(agStore ports.AgreementStore, apartStore ports.ApartmentStore, tmplStore ports.TemplateStore, bus ports.Bus, client ports.TuyaClient, tmpl ports.Templater) *Agreement {
 	return &Agreement{
 		agreementStore: agStore,
 		apartStore:     apartStore,
+		templateStore:  tmplStore,
 		bus:            bus,
 		tyuaClient:     client,
+		templater:      tmpl,
 	}
 }
 
@@ -35,7 +45,6 @@ func (a *Agreement) CreateAgreement(ctx context.Context, apartmentID string, agr
 	agreement.ID = uuid.New().String()
 	agreement.Status = entity.Draft
 	agreement.Apartment = *apartment
-	agreement.Text = buildAgreementText(agreement)
 
 	if err = a.agreementStore.AgreementPut(ctx, agreement); err != nil {
 		return "", fmt.Errorf("%w", err)
@@ -50,6 +59,11 @@ func (a *Agreement) GetAgreement(ctx context.Context, id string) (*entity.Agreem
 		return nil, fmt.Errorf("%w", err)
 	}
 
+	agreement.Text, err = a.buildAgreementText(ctx, *agreement)
+	if err != nil {
+		return nil, err
+	}
+
 	return agreement, nil
 }
 
@@ -60,6 +74,10 @@ func (a *Agreement) SignAgreement(ctx context.Context, id string) error {
 	}
 
 	agreement.Status = entity.Signed
+	agreement.Text, err = a.buildAgreementText(ctx, *agreement)
+	if err != nil {
+		return err
+	}
 
 	if err = a.agreementStore.AgreementPut(ctx, *agreement); err != nil {
 		return err
@@ -75,27 +93,16 @@ func (a *Agreement) SignAgreement(ctx context.Context, id string) error {
 	return a.bus.Publish(ctx, event)
 }
 
-func buildAgreementText(agreement entity.Agreement) string {
-	return fmt.Sprintf(
-		agreementText,
-		agreement.Tenant.Name,
-		agreement.Tenant.Surname,
-		agreement.Apartment.Address,
-		agreement.ElapsedAt,
-		agreement.StartAt,
-	)
-}
+func (a *Agreement) buildAgreementText(ctx context.Context, agreement entity.Agreement) (string, error) {
+	template, err := a.templateStore.TemplateGet(ctx, agreementTemplateName)
+	if err != nil {
+		return "", err
+	}
 
-var agreementText = `
-Yo, %s %s, confirmo que he leído y acepto este acuerdo adicional relacionado con mi estancia en la vivienda ubicada en:\n
-%s.\n
-En esta vivienda se ha implementado un sistema que permite desconectar automáticamente los suministros de electricidad y agua al finalizar el período de alquiler.\n
-Este sistema tiene como finalidad:\n
-- evitar el consumo innecesario tras la salida del huésped,\n
-- prevenir posibles incidentes (como fugas de agua o electrodomésticos encendidos),\n
-- y facilitar la preparación del alojamiento para los próximos huéspedes.\n\n
-Confirmo que:\n
-✔️ Acepto que los suministros serán desconectados automáticamente al finalizar el contrato — %s.\n
-✔️ Yo mismo/a he activado esta funcionalidad previamente, a través de la aplicación, antes del inicio de mi estancia.\n\n
-Fecha de firma: %s
-	`
+	text, err := a.templater.FillTemplate(ctx, template, ports.ToAgreementText(agreement, agreement.Apartment))
+	if err != nil {
+		return "", err
+	}
+
+	return text, nil
+}
