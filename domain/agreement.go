@@ -10,15 +10,9 @@ import (
 	"github.com/dosovma/morosos-be/ports"
 )
 
-type templateName = string
-
-const (
-	agreementTemplateName templateName = "agreement"
-)
-
 type Agreement struct {
 	agreementStore ports.AgreementStore
-	apartStore     ports.ApartmentStore
+	apartmentStore ports.ApartmentStore
 	templateStore  ports.TemplateStore
 	bus            ports.Bus
 	tyuaClient     ports.TuyaClient
@@ -28,7 +22,7 @@ type Agreement struct {
 func NewAgreementDomain(agStore ports.AgreementStore, apartStore ports.ApartmentStore, tmplStore ports.TemplateStore, bus ports.Bus, client ports.TuyaClient, tmpl ports.Templater) *Agreement {
 	return &Agreement{
 		agreementStore: agStore,
-		apartStore:     apartStore,
+		apartmentStore: apartStore,
 		templateStore:  tmplStore,
 		bus:            bus,
 		tyuaClient:     client,
@@ -37,14 +31,23 @@ func NewAgreementDomain(agStore ports.AgreementStore, apartStore ports.Apartment
 }
 
 func (a *Agreement) CreateAgreement(ctx context.Context, apartmentID string, agreement entity.Agreement) (string, error) {
-	apartment, err := a.apartStore.ApartmentGet(ctx, apartmentID)
+	apartment, err := a.apartmentStore.ApartmentGet(ctx, apartmentID)
 	if err != nil {
 		return "", fmt.Errorf("%w", err)
 	}
 
 	agreement.ID = uuid.New().String()
 	agreement.Status = entity.Draft
-	agreement.Apartment = *apartment
+	agreement.Apartment = entity.ApartmentData{
+		ApartmentID: apartmentID,
+		Landlord:    apartment.Landlord,
+		Address:     apartment.Address,
+	}
+
+	agreement.Text, err = a.buildAgreementText(ctx, agreement)
+	if err != nil {
+		return "", err
+	}
 
 	if err = a.agreementStore.AgreementPut(ctx, agreement); err != nil {
 		return "", fmt.Errorf("%w", err)
@@ -59,11 +62,6 @@ func (a *Agreement) GetAgreement(ctx context.Context, id string) (*entity.Agreem
 		return nil, fmt.Errorf("%w", err)
 	}
 
-	agreement.Text, err = a.buildAgreementText(ctx, *agreement)
-	if err != nil {
-		return nil, err
-	}
-
 	return agreement, nil
 }
 
@@ -74,10 +72,6 @@ func (a *Agreement) SignAgreement(ctx context.Context, id string) error {
 	}
 
 	agreement.Status = entity.Signed
-	agreement.Text, err = a.buildAgreementText(ctx, *agreement)
-	if err != nil {
-		return err
-	}
 
 	if err = a.agreementStore.AgreementPut(ctx, *agreement); err != nil {
 		return err
@@ -85,7 +79,7 @@ func (a *Agreement) SignAgreement(ctx context.Context, id string) error {
 
 	event := ports.Event{
 		Source:     "agreement",
-		Detail:     agreement.Apartment.ID,
+		Detail:     agreement.Apartment.ApartmentID,
 		DetailType: "sign",
 		Resources:  nil,
 	}
@@ -94,15 +88,15 @@ func (a *Agreement) SignAgreement(ctx context.Context, id string) error {
 }
 
 func (a *Agreement) buildAgreementText(ctx context.Context, agreement entity.Agreement) (string, error) {
-	template, err := a.templateStore.TemplateGet(ctx, agreementTemplateName)
+	template, err := a.templateStore.TemplateGet(ctx, entity.AgreementTemplateName)
 	if err != nil {
 		return "", err
 	}
 
-	text, err := a.templater.FillTemplate(ctx, template, ports.ToAgreementText(agreement, agreement.Apartment))
+	agreementText, err := a.templater.FillTemplate(ctx, template, ports.ToAgreementText(agreement))
 	if err != nil {
 		return "", err
 	}
 
-	return text, nil
+	return agreementText, nil
 }

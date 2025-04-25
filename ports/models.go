@@ -16,11 +16,11 @@ type AgreementText struct {
 	ApartmentAddress string
 }
 
-func ToAgreementText(agreement entity.Agreement, apartment entity.Apartment) AgreementText {
+func ToAgreementText(agreement entity.Agreement) AgreementText {
 	return AgreementText{
 		ElapsedAt:        agreement.ElapsedAt,
 		TenantName:       agreement.Tenant.Name,
 		TenantSurname:    agreement.Tenant.Surname,
-		ApartmentAddress: apartment.Address,
+		ApartmentAddress: agreement.Apartment.Address,
 	}
 }

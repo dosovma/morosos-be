@@ -72,7 +72,7 @@ func (l *AgreementHandler) GetHandler(ctx context.Context, event events.APIGatew
 }
 
 func (l *AgreementHandler) StatusHandler(ctx context.Context, event events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	var status entity.Status
+	var status statusAgreementReq
 	if err := json.Unmarshal([]byte(event.Body), &status); err != nil {
 		return errProxyResponse(http.StatusInternalServerError, err.Error()), nil
 	}

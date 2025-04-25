@@ -62,7 +62,7 @@ func (l *ApartmentHandler) GetHandler(ctx context.Context, event events.APIGatew
 }
 
 func (l *ApartmentHandler) StatusHandler(ctx context.Context, event events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	var status entity.Status
+	var status statusApartmentReq
 	if err := json.Unmarshal([]byte(event.Body), &status); err != nil {
 		return errProxyResponse(http.StatusInternalServerError, err.Error()), nil
 	}
