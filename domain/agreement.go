@@ -3,6 +3,8 @@ package domain
 import (
 	"context"
 	"fmt"
+	"log"
+	"time"
 
 	"github.com/google/uuid"
 
@@ -42,6 +44,14 @@ func (a *Agreement) CreateAgreement(ctx context.Context, apartmentID string, agr
 		ApartmentID: apartmentID,
 		Landlord:    apartment.Landlord,
 		Address:     apartment.Address,
+	}
+	elapsedTime, err := time.Parse("2006-01-02T15:04", agreement.ElapsedAt)
+	if err != nil {
+		log.Printf("failed to parse date ::: %s", err)
+	}
+
+	if !elapsedTime.IsZero() {
+		agreement.ElapsedAt = elapsedTime.Format("02-01-2006 15:04")
 	}
 
 	agreement.Text, err = a.buildAgreementText(ctx, agreement)
