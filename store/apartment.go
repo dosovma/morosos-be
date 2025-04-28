@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
@@ -82,4 +83,39 @@ func (d *ApartmentDynamoDBStore) ApartmentPut(ctx context.Context, apartment ent
 	}
 
 	return nil
+}
+
+func (d *ApartmentDynamoDBStore) ApartmentGetAll(ctx context.Context, next *string) (entity.ApartmentRange, error) {
+	apartmentRange := entity.ApartmentRange{
+		Apartments: []entity.Apartment{},
+	}
+
+	input := &dynamodb.ScanInput{
+		TableName: &d.tableName,
+		Limit:     aws.Int32(20),
+	}
+
+	if next != nil {
+		input.ExclusiveStartKey = map[string]ddbtypes.AttributeValue{
+			"id": &ddbtypes.AttributeValueMemberS{Value: *next},
+		}
+	}
+
+	result, err := d.client.Scan(ctx, input)
+	if err != nil {
+		return apartmentRange, fmt.Errorf("failed to get items from DynamoDB: %w", err)
+	}
+
+	if err = attributevalue.UnmarshalListOfMaps(result.Items, &apartmentRange.Apartments); err != nil {
+		return apartmentRange, fmt.Errorf("failed to unmarshal data from DynamoDB: %w", err)
+	}
+
+	if len(result.LastEvaluatedKey) > 0 {
+		if key, ok := result.LastEvaluatedKey["id"]; ok {
+			nextKey := key.(*ddbtypes.AttributeValueMemberS).Value
+			apartmentRange.Next = &nextKey
+		}
+	}
+
+	return apartmentRange, nil
 }

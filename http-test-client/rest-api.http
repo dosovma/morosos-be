@@ -36,19 +36,14 @@ Content-Type: application/json
 
 {
   "landlord": {
-    "name": "Mikhail",
-    "surname": "Dosov"
+    "name": "Andrey",
+    "surname": "Strepetov"
   },
-  "address": "C. de la Confraria de l'Assumpció, 8, 46701 Gandia, Valencia, España. Pl.  02",
+  "address": "Carrer de la Partida de Palmers, 3, 46701 Gandia, Valencia, España",
   "devices": [
     {
       "id": "vdevo174111102058365",
       "name": "Electricidad",
-      "on": false
-    },
-    {
-      "id": "vdevo174489686258065",
-      "name": "Agua",
       "on": false
     }
   ]
@@ -56,6 +51,9 @@ Content-Type: application/json
 
 ###
 GET https://gtw06or8tl.execute-api.eu-north-1.amazonaws.com/test/api/v1/apartments/e3abab76-6c94-419f-a7de-e97a01af62db
+
+###
+GET https://gtw06or8tl.execute-api.eu-north-1.amazonaws.com/test/api/v1/apartments
 
 ###
 POST https://gtw06or8tl.execute-api.eu-north-1.amazonaws.com/test/api/v1/apartments/e3abab76-6c94-419f-a7de-e97a01af62db/statuses

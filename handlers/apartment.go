@@ -88,3 +88,14 @@ func (l *ApartmentHandler) StatusHandler(ctx context.Context, event events.APIGa
 	return proxyResponse(http.StatusOK, statusApartmentResp{Success: true}), nil
 
 }
+
+func (l *ApartmentHandler) GetAllHandler(ctx context.Context, event events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	next := event.QueryStringParameters["next"]
+
+	apartmentRange, err := l.apartment.GetAllApartment(ctx, &next)
+	if err != nil {
+		return errProxyResponse(http.StatusInternalServerError, err.Error()), nil
+	}
+
+	return proxyResponse(http.StatusOK, apartmentRange), nil
+}

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/google/uuid"
 
@@ -64,4 +65,17 @@ func (a *Apartment) SwitchDevices(ctx context.Context, id string, isOn bool) err
 	}
 
 	return a.store.ApartmentPut(ctx, *apartment)
+}
+
+func (a *Apartment) GetAllApartment(ctx context.Context, next *string) (entity.ApartmentRange, error) {
+	if next != nil && strings.TrimSpace(*next) == "" {
+		next = nil
+	}
+
+	apartmentRange, err := a.store.ApartmentGetAll(ctx, next)
+	if err != nil {
+		return apartmentRange, fmt.Errorf("%w", err)
+	}
+
+	return apartmentRange, nil
 }

@@ -19,3 +19,8 @@ const (
 	ApartmentOff ApartmentAction = "apartment_off"
 	ApartmentOn  ApartmentAction = "apartment_on"
 )
+
+type ApartmentRange struct {
+	Apartments []Apartment `json:"apartments"`
+	Next       *string     `json:"next,omitempty"`
+}

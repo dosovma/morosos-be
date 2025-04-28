@@ -12,6 +12,7 @@ type Apartment interface {
 	GetApartment(ctx context.Context, id string) (*entity.Apartment, error)
 	CreateApartment(ctx context.Context, apartment entity.Apartment) (string, error)
 	SwitchDevices(ctx context.Context, id string, isOn bool) error
+	GetAllApartment(ctx context.Context, next *string) (entity.ApartmentRange, error)
 }
 
 type Agreement interface {
@@ -30,6 +31,7 @@ type AgreementStore interface {
 type ApartmentStore interface {
 	ApartmentGet(context.Context, string) (*entity.Apartment, error)
 	ApartmentPut(context.Context, entity.Apartment) error
+	ApartmentGetAll(ctx context.Context, next *string) (entity.ApartmentRange, error)
 }
 
 type TemplateStore interface {
