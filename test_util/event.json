@@ -1,0 +1,14 @@
+{
+  "action": "apartment_off"
+}
+
+{
+  "action": "apartment_on"
+}
+
+{
+  "source": ["aws.lambda"],
+  "detail":"<required>",
+  "detailtype":"<required>",
+  "action":"<required>"
+}

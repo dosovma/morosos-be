@@ -3,14 +3,14 @@ package domain
 import (
 	"context"
 	"fmt"
-	"log"
-	"time"
 
 	"github.com/google/uuid"
 
 	"github.com/dosovma/morosos-be/domain/entity"
 	"github.com/dosovma/morosos-be/ports"
 )
+
+var _ ports.Agreement = (*Agreement)(nil)
 
 type Agreement struct {
 	agreementStore ports.AgreementStore
@@ -45,14 +45,6 @@ func (a *Agreement) CreateAgreement(ctx context.Context, apartmentID string, agr
 		Landlord:    apartment.Landlord,
 		Address:     apartment.Address,
 	}
-	elapsedTime, err := time.Parse("2006-01-02T15:04", agreement.ElapsedAt)
-	if err != nil {
-		log.Printf("failed to parse date ::: %s", err)
-	}
-
-	if !elapsedTime.IsZero() {
-		agreement.ElapsedAt = elapsedTime.Format("02-01-2006 15:04")
-	}
 
 	agreement.Text, err = a.buildAgreementText(ctx, agreement)
 	if err != nil {
@@ -67,7 +59,7 @@ func (a *Agreement) CreateAgreement(ctx context.Context, apartmentID string, agr
 }
 
 func (a *Agreement) GetAgreement(ctx context.Context, id string) (*entity.Agreement, error) {
-	agreement, err := a.agreementStore.AgreementGet(ctx, id)
+	agreement, err := a.agreementStore.AgreementGetByID(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("%w", err)
 	}
@@ -76,7 +68,7 @@ func (a *Agreement) GetAgreement(ctx context.Context, id string) (*entity.Agreem
 }
 
 func (a *Agreement) SignAgreement(ctx context.Context, id string) error {
-	agreement, err := a.agreementStore.AgreementGet(ctx, id)
+	agreement, err := a.agreementStore.AgreementGetByID(ctx, id)
 	if err != nil {
 		return fmt.Errorf("%w", err)
 	}
@@ -87,14 +79,7 @@ func (a *Agreement) SignAgreement(ctx context.Context, id string) error {
 		return err
 	}
 
-	event := ports.Event{
-		Source:     "agreement",
-		Detail:     agreement.Apartment.ApartmentID,
-		DetailType: "sign",
-		Resources:  nil,
-	}
-
-	return a.bus.Publish(ctx, event)
+	return a.bus.PublishAgreementEvent(ctx, *agreement)
 }
 
 func (a *Agreement) buildAgreementText(ctx context.Context, agreement entity.Agreement) (string, error) {
@@ -103,10 +88,31 @@ func (a *Agreement) buildAgreementText(ctx context.Context, agreement entity.Agr
 		return "", err
 	}
 
-	agreementText, err := a.templater.FillTemplate(ctx, template, ports.ToAgreementText(agreement))
+	agreementText, err := a.templater.FillTemplate(ctx, template, entity.ToAgreementText(agreement))
 	if err != nil {
 		return "", err
 	}
 
 	return agreementText, nil
+}
+
+func (a *Agreement) CompleteAgreement(ctx context.Context) error {
+	agreements, err := a.agreementStore.AgreementGetAllByStatus(ctx, entity.Signed)
+	if err != nil {
+		return err
+	}
+
+	for _, agreement := range agreements {
+		agreement.Status = entity.Completed
+
+		if err = a.agreementStore.AgreementPut(ctx, agreement); err != nil {
+			return err
+		}
+
+		if err = a.bus.PublishAgreementEvent(ctx, agreement); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

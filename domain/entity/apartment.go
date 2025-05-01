@@ -1,5 +1,12 @@
 package entity
 
+type ApartmentAction = string
+
+const (
+	ApartmentOff ApartmentAction = "apartment_off"
+	ApartmentOn  ApartmentAction = "apartment_on"
+)
+
 type Apartment struct {
 	ID       string   `dynamodbav:"id" json:"id"`
 	Landlord User     `dynamodbav:"landlord" json:"landlord"`
@@ -12,13 +19,6 @@ type Device struct {
 	Name string `dynamodbav:"name" json:"name"`
 	IsOn bool   `dynamodbav:"on" json:"on"`
 }
-
-type ApartmentAction = string
-
-const (
-	ApartmentOff ApartmentAction = "apartment_off"
-	ApartmentOn  ApartmentAction = "apartment_on"
-)
 
 type ApartmentRange struct {
 	Apartments []Apartment `json:"apartments"`

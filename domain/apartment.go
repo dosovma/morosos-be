@@ -13,6 +13,8 @@ import (
 	"github.com/dosovma/morosos-be/ports"
 )
 
+var _ ports.Apartment = (*Apartment)(nil)
+
 type Apartment struct {
 	store      ports.ApartmentStore
 	tyuaClient ports.TuyaClient

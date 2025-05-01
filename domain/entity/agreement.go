@@ -1,10 +1,16 @@
 package entity
 
+import (
+	"log"
+	"time"
+)
+
 type AgreementStatus = string
 
 const (
-	Draft  AgreementStatus = "draft"
-	Signed AgreementStatus = "signed"
+	Draft     AgreementStatus = "draft"
+	Signed    AgreementStatus = "signed"
+	Completed AgreementStatus = "completed"
 )
 
 type AgreementAction = string
@@ -28,4 +34,29 @@ type ApartmentData struct {
 	ApartmentID string `dynamodbav:"apartment_id" json:"apartment_id"`
 	Landlord    User   `dynamodbav:"landlord" json:"landlord"`
 	Address     string `dynamodbav:"address" json:"address"`
+}
+
+type AgreementText struct {
+	ElapsedAt        string
+	TenantName       string
+	TenantSurname    string
+	ApartmentAddress string
+}
+
+func ToAgreementText(agreement Agreement) AgreementText {
+	elapsedTime, err := time.Parse("2006-01-02T15:04", agreement.ElapsedAt)
+	if err != nil {
+		log.Printf("failed to parse date ::: %s", err)
+	}
+
+	if !elapsedTime.IsZero() {
+		agreement.ElapsedAt = elapsedTime.Format("02-01-2006 15:04")
+	}
+
+	return AgreementText{
+		ElapsedAt:        agreement.ElapsedAt,
+		TenantName:       agreement.Tenant.Name,
+		TenantSurname:    agreement.Tenant.Surname,
+		ApartmentAddress: agreement.Apartment.Address,
+	}
 }

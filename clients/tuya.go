@@ -1,8 +1,6 @@
 package clients
 
 import (
-	"log"
-
 	tuyasdk "github.com/iot-eco-system/tuya-iot-service-sdk"
 	"github.com/iot-eco-system/tuya-iot-service-sdk/model"
 
@@ -37,14 +35,10 @@ func (*TuyaClient) PostDevice(id string, isOn bool) error {
 		Commands: buildCmd(id, isOn),
 	}
 
-	resp, err := client.DeviceSendCommands(req)
+	_, err := client.DeviceSendCommands(req)
 	if err != nil {
-		log.Printf("resp with error %s", err.Error())
-
 		return err
 	}
-
-	log.Printf("resp ::: %v", resp)
 
 	client.Stop()
 

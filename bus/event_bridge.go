@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/dosovma/morosos-be/domain/entity"
 	"github.com/dosovma/morosos-be/ports"
 )
 
@@ -19,7 +20,7 @@ func NewEventBridgeBus(apartment ports.Apartment) *EventBridgeBus {
 	}
 }
 
-func (b *EventBridgeBus) Publish(ctx context.Context, event ports.Event) error {
+func (b *EventBridgeBus) PublishAgreementEvent(ctx context.Context, agreement entity.Agreement) error {
 	/*
 		Source:     "agreement",
 		Detail:     agreement.Apartment.ID,
@@ -27,19 +28,26 @@ func (b *EventBridgeBus) Publish(ctx context.Context, event ports.Event) error {
 		Resources:  nil,
 	*/
 
-	switch event.DetailType {
-	case "sign":
-		if err := b.apartment.SwitchDevices(ctx, event.Detail, true); err != nil {
-			return err
+	switch agreement.Status {
+	case entity.Signed:
+		event := Event{
+			Source:     Agreement,
+			Detail:     agreement.Apartment.ApartmentID,
+			DetailType: entity.Signed,
+			Resources:  nil,
 		}
 
-		return scheduleEvent(ctx)
-	default:
-		return fmt.Errorf("unknown event type ::: %s", event.DetailType)
-	}
-}
+		return b.apartment.SwitchDevices(ctx, event.Detail, true)
+	case entity.Completed:
+		event := Event{
+			Source:     Agreement,
+			Detail:     agreement.Apartment.ApartmentID,
+			DetailType: entity.Completed,
+			Resources:  nil,
+		}
 
-func scheduleEvent(ctx context.Context /*agreement entity.Agreement*/) error {
-	// TODO use event bridge
-	return nil
+		return b.apartment.SwitchDevices(ctx, event.Detail, false)
+	default:
+		return fmt.Errorf("unknown agreement status ::: %s", agreement.Status)
+	}
 }

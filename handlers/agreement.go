@@ -94,6 +94,10 @@ func (l *AgreementHandler) StatusHandler(ctx context.Context, event events.APIGa
 	return proxyResponse(http.StatusOK, statusAgreementResp{Success: true}), nil
 }
 
+func (l *AgreementHandler) CompleteHandler(ctx context.Context) error {
+	return l.agreement.CompleteAgreement(ctx)
+}
+
 func validate(agreement entity.Agreement) error {
 	// TODO
 	return nil

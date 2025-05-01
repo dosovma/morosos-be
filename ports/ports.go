@@ -9,33 +9,35 @@ import (
 // Input
 
 type Apartment interface {
-	GetApartment(ctx context.Context, id string) (*entity.Apartment, error)
-	CreateApartment(ctx context.Context, apartment entity.Apartment) (string, error)
-	SwitchDevices(ctx context.Context, id string, isOn bool) error
-	GetAllApartment(ctx context.Context, next *string) (entity.ApartmentRange, error)
+	GetApartment(context.Context, string) (*entity.Apartment, error)
+	CreateApartment(context.Context, entity.Apartment) (string, error)
+	SwitchDevices(context.Context, string, bool) error
+	GetAllApartment(context.Context, *string) (entity.ApartmentRange, error)
 }
 
 type Agreement interface {
-	CreateAgreement(ctx context.Context, id string, agreement entity.Agreement) (string, error)
-	GetAgreement(ctx context.Context, id string) (*entity.Agreement, error)
-	SignAgreement(ctx context.Context, id string) error
+	CreateAgreement(context.Context, string, entity.Agreement) (string, error)
+	GetAgreement(context.Context, string) (*entity.Agreement, error)
+	SignAgreement(context.Context, string) error
+	CompleteAgreement(context.Context) error
 }
 
 // Output
 
 type AgreementStore interface {
-	AgreementGet(context.Context, string) (*entity.Agreement, error)
+	AgreementGetByID(context.Context, string) (*entity.Agreement, error)
 	AgreementPut(context.Context, entity.Agreement) error
+	AgreementGetAllByStatus(context.Context, entity.AgreementStatus) ([]entity.Agreement, error)
 }
 
 type ApartmentStore interface {
 	ApartmentGet(context.Context, string) (*entity.Apartment, error)
 	ApartmentPut(context.Context, entity.Apartment) error
-	ApartmentGetAll(ctx context.Context, next *string) (entity.ApartmentRange, error)
+	ApartmentGetAll(context.Context, *string) (entity.ApartmentRange, error)
 }
 
 type TemplateStore interface {
-	TemplateGet(ctx context.Context, name string) (string, error)
+	TemplateGet(context.Context, string) (string, error)
 }
 
 type TuyaClient interface {
@@ -43,7 +45,7 @@ type TuyaClient interface {
 }
 
 type Bus interface {
-	Publish(context.Context, Event) error
+	PublishAgreementEvent(context.Context, entity.Agreement) error
 }
 
 type Templater interface {

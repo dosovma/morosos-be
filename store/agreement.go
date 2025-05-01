@@ -6,6 +6,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
@@ -36,7 +37,7 @@ func NewAgreementDynamoDBStore(ctx context.Context, tableName string) *Agreement
 	}
 }
 
-func (d *AgreementDynamoDBStore) AgreementGet(ctx context.Context, id string) (*entity.Agreement, error) {
+func (d *AgreementDynamoDBStore) AgreementGetByID(ctx context.Context, id string) (*entity.Agreement, error) {
 	response, err := d.client.GetItem(
 		ctx, &dynamodb.GetItemInput{
 			TableName: &d.tableName,
@@ -45,8 +46,6 @@ func (d *AgreementDynamoDBStore) AgreementGet(ctx context.Context, id string) (*
 			},
 		},
 	)
-
-	log.Printf("get item sucess: %v", response)
 
 	if err != nil {
 		return nil, fmt.Errorf("failed to get item from DynamoDB: %w", err)
@@ -86,4 +85,36 @@ func (d *AgreementDynamoDBStore) AgreementPut(ctx context.Context, agreement ent
 	}
 
 	return nil
+}
+
+func (d *AgreementDynamoDBStore) AgreementGetAllByStatus(ctx context.Context, status entity.AgreementStatus) ([]entity.Agreement, error) {
+	agreementRange := make([]entity.Agreement, 0, 20)
+
+	log.Printf("time to filter %v", time.Now().Add(2*time.Hour).Format("2006-01-02T15:04"))
+
+	input := &dynamodb.ScanInput{
+		TableName: &d.tableName,
+		Limit:     aws.Int32(20),
+		ExpressionAttributeValues: map[string]ddbtypes.AttributeValue{
+			":statusValue":    &ddbtypes.AttributeValueMemberS{Value: status},
+			":elapsedAtValue": &ddbtypes.AttributeValueMemberS{Value: time.Now().Add(2 * time.Hour).Format("2006-01-02T15:04")},
+		},
+		ExpressionAttributeNames: map[string]string{
+			"#status":     "status",
+			"#elapsed_at": "elapsed_at",
+		},
+		FilterExpression: func(s string) *string { return &s }("#status = :statusValue and #elapsed_at <= :elapsedAtValue"),
+	}
+
+	result, err := d.client.Scan(ctx, input)
+	if err != nil {
+		return nil, fmt.Errorf("failed to scan items from DynamoDB: %w", err)
+	}
+
+	if err = attributevalue.UnmarshalListOfMaps(result.Items, &agreementRange); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal data from DynamoDB: %w", err)
+	}
+
+	return agreementRange, nil
+
 }
