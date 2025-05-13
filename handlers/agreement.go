@@ -44,13 +44,13 @@ func (l *AgreementHandler) CreateHandler(ctx context.Context, event events.APIGa
 
 	if id == "" {
 		return errProxyResponse(http.StatusNotFound, "agreement not found"), nil
-	} else {
-		return proxyResponse(
-			http.StatusOK, createAgreementResp{
-				AgreementID: id,
-			},
-		), nil
 	}
+
+	return proxyResponse(
+		http.StatusCreated, createAgreementResp{
+			AgreementID: id,
+		},
+	), nil
 }
 
 func (l *AgreementHandler) GetHandler(ctx context.Context, event events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
@@ -66,9 +66,9 @@ func (l *AgreementHandler) GetHandler(ctx context.Context, event events.APIGatew
 
 	if agreement == nil {
 		return errProxyResponse(http.StatusNotFound, "agreement not found"), nil
-	} else {
-		return proxyResponse(http.StatusOK, agreement), nil
 	}
+
+	return proxyResponse(http.StatusOK, agreement), nil
 }
 
 func (l *AgreementHandler) StatusHandler(ctx context.Context, event events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
@@ -98,7 +98,7 @@ func (l *AgreementHandler) CompleteHandler(ctx context.Context) error {
 	return l.agreement.CompleteAgreement(ctx)
 }
 
-func validate(agreement entity.Agreement) error {
+func validate(entity.Agreement) error {
 	// TODO
 	return nil
 }

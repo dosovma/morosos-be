@@ -21,13 +21,6 @@ func NewEventBridgeBus(apartment ports.Apartment) *EventBridgeBus {
 }
 
 func (b *EventBridgeBus) PublishAgreementEvent(ctx context.Context, agreement entity.Agreement) error {
-	/*
-		Source:     "agreement",
-		Detail:     agreement.Apartment.ID,
-		DetailType: "sign",
-		Resources:  nil,
-	*/
-
 	switch agreement.Status {
 	case entity.Signed:
 		event := Event{

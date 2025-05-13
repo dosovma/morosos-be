@@ -46,7 +46,6 @@ func (d *ApartmentDynamoDBStore) ApartmentGet(ctx context.Context, id string) (*
 			},
 		},
 	)
-
 	if err != nil {
 		return nil, fmt.Errorf("failed to get item from DynamoDB: %w", err)
 	}
@@ -56,9 +55,8 @@ func (d *ApartmentDynamoDBStore) ApartmentGet(ctx context.Context, id string) (*
 	}
 
 	apartment := entity.Apartment{}
-	err = attributevalue.UnmarshalMap(response.Item, &apartment)
 
-	if err != nil {
+	if err = attributevalue.UnmarshalMap(response.Item, &apartment); err != nil {
 		return nil, fmt.Errorf("error getting item %w", err)
 	}
 
@@ -77,7 +75,6 @@ func (d *ApartmentDynamoDBStore) ApartmentPut(ctx context.Context, apartment ent
 			Item:      item,
 		},
 	)
-
 	if err != nil {
 		return fmt.Errorf("cannot put item: %w", err)
 	}
@@ -86,13 +83,15 @@ func (d *ApartmentDynamoDBStore) ApartmentPut(ctx context.Context, apartment ent
 }
 
 func (d *ApartmentDynamoDBStore) ApartmentGetAll(ctx context.Context, next *string) (entity.ApartmentRange, error) {
+	const limit = 20
+
 	apartmentRange := entity.ApartmentRange{
 		Apartments: []entity.Apartment{},
 	}
 
 	input := &dynamodb.ScanInput{
 		TableName: &d.tableName,
-		Limit:     aws.Int32(20),
+		Limit:     aws.Int32(limit),
 	}
 
 	if next != nil {

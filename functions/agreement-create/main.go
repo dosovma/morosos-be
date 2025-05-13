@@ -21,7 +21,7 @@ func main() {
 	apartmentDomain := domain.NewApartmentDomain(apartmentStore, clients.NewTuyaClient(), smsClient)
 	eventBridge := bus.NewEventBridgeBus(apartmentDomain)
 	templateStore := store.NewTemplateDynamoDBStore(context.TODO(), "templates")
-	htmlTemplater := templater.NewHtmlTemplater()
+	htmlTemplater := templater.NewHTMLTemplater()
 	agreementDomain := domain.NewAgreementDomain(agreementStore, apartmentStore, templateStore, eventBridge, clients.NewTuyaClient(), htmlTemplater)
 	handler := handlers.NewAgreementHandler(agreementDomain)
 

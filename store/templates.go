@@ -45,7 +45,6 @@ func (d *TemplateDynamoDBStore) TemplateGet(ctx context.Context, name string) (s
 			},
 		},
 	)
-
 	if err != nil {
 		return "", fmt.Errorf("failed to get item from DynamoDB: %w", err)
 	}
@@ -55,9 +54,8 @@ func (d *TemplateDynamoDBStore) TemplateGet(ctx context.Context, name string) (s
 	}
 
 	template := entity.Template{}
-	err = attributevalue.UnmarshalMap(response.Item, &template)
 
-	if err != nil {
+	if err = attributevalue.UnmarshalMap(response.Item, &template); err != nil {
 		return "", fmt.Errorf("error getting item %w", err)
 	}
 

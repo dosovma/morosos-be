@@ -1,18 +1,17 @@
 package templater
 
 import (
-	"context"
 	"html/template"
 	"strings"
 )
 
-type HtmlTemplater struct{}
+type HTMLTemplater struct{}
 
-func NewHtmlTemplater() *HtmlTemplater {
-	return &HtmlTemplater{}
+func NewHTMLTemplater() *HTMLTemplater {
+	return &HTMLTemplater{}
 }
 
-func (*HtmlTemplater) FillTemplate(ctx context.Context, tmpl string, tmplData any) (string, error) {
+func (*HTMLTemplater) FillTemplate(tmpl string, tmplData any) (string, error) {
 	templater, err := template.New("tmpl").Parse(tmpl)
 	if err != nil {
 		return "", err
@@ -20,7 +19,7 @@ func (*HtmlTemplater) FillTemplate(ctx context.Context, tmpl string, tmplData an
 
 	writer := new(strings.Builder)
 
-	if err := templater.Execute(writer, tmplData); err != nil {
+	if err = templater.Execute(writer, tmplData); err != nil {
 		return "", err
 	}
 

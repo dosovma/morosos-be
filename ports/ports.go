@@ -49,7 +49,7 @@ type Bus interface {
 }
 
 type Templater interface {
-	FillTemplate(context.Context, string, any) (string, error)
+	FillTemplate(string, any) (string, error)
 }
 
 type SmsSender interface {

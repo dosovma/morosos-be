@@ -19,6 +19,7 @@ func NewTuyaClient() *TuyaClient {
 
 func (*TuyaClient) PostDevice(id string, isOn bool) error {
 	log.Println("tuya starts")
+
 	client := tuyasdk.NewTuyaAPIClient(
 		tuyasdk.NewTuyaAPIClientOptions{
 			Host:     "https://openapi.tuyaeu.com",

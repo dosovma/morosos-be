@@ -88,16 +88,21 @@ func (d *AgreementDynamoDBStore) AgreementPut(ctx context.Context, agreement ent
 }
 
 func (d *AgreementDynamoDBStore) AgreementGetAllByStatus(ctx context.Context, status entity.AgreementStatus) ([]entity.Agreement, error) {
-	agreementRange := make([]entity.Agreement, 0, 20)
+	const (
+		limit    = 20
+		timeZone = 2
+	)
 
-	log.Printf("time to filter %v", time.Now().Add(2*time.Hour).Format("2006-01-02T15:04"))
+	agreementRange := make([]entity.Agreement, 0, limit)
+
+	log.Printf("time to filter %v", time.Now().Add(timeZone*time.Hour).Format("2006-01-02T15:04"))
 
 	input := &dynamodb.ScanInput{
 		TableName: &d.tableName,
-		Limit:     aws.Int32(20),
+		Limit:     aws.Int32(limit),
 		ExpressionAttributeValues: map[string]ddbtypes.AttributeValue{
 			":statusValue":    &ddbtypes.AttributeValueMemberS{Value: status},
-			":elapsedAtValue": &ddbtypes.AttributeValueMemberS{Value: time.Now().Add(2 * time.Hour).Format("2006-01-02T15:04")},
+			":elapsedAtValue": &ddbtypes.AttributeValueMemberS{Value: time.Now().Add(timeZone * time.Hour).Format("2006-01-02T15:04")},
 		},
 		ExpressionAttributeNames: map[string]string{
 			"#status":     "status",
@@ -116,5 +121,4 @@ func (d *AgreementDynamoDBStore) AgreementGetAllByStatus(ctx context.Context, st
 	}
 
 	return agreementRange, nil
-
 }

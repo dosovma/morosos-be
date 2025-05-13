@@ -34,13 +34,13 @@ func (l *ApartmentHandler) CreateHandler(ctx context.Context, event events.APIGa
 
 	if id == "" {
 		return errProxyResponse(http.StatusNotFound, "apartment not found"), nil
-	} else {
-		return proxyResponse(
-			http.StatusOK, createApartmentResp{
-				ApartmentID: id,
-			},
-		), nil
 	}
+
+	return proxyResponse(
+		http.StatusCreated, createApartmentResp{
+			ApartmentID: id,
+		},
+	), nil
 }
 
 func (l *ApartmentHandler) GetHandler(ctx context.Context, event events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
@@ -56,9 +56,9 @@ func (l *ApartmentHandler) GetHandler(ctx context.Context, event events.APIGatew
 
 	if apartment == nil {
 		return errProxyResponse(http.StatusNotFound, "apartment not found"), nil
-	} else {
-		return proxyResponse(http.StatusOK, apartment), nil
 	}
+
+	return proxyResponse(http.StatusOK, apartment), nil
 }
 
 func (l *ApartmentHandler) StatusHandler(ctx context.Context, event events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
@@ -86,7 +86,6 @@ func (l *ApartmentHandler) StatusHandler(ctx context.Context, event events.APIGa
 	}
 
 	return proxyResponse(http.StatusOK, statusApartmentResp{Success: true}), nil
-
 }
 
 func (l *ApartmentHandler) GetAllHandler(ctx context.Context, event events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {

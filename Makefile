@@ -11,6 +11,9 @@ GCCGO := aarch64-linux-gnu-gccgo-10
 
 ci: build tests-unit
 
+lint:
+	golangci-lint run --config .golangci.yml ./...
+
 build:
 		${MAKE} ${MAKEOPTS} $(foreach function,${FUNCTIONS}, build-${function})
 
@@ -91,8 +94,8 @@ GO_FILES := $(shell \
 	       -o -name '*.go' -print | cut -b3-)
 MODULE_DIRS = .
 
-.PHONY: lint
-lint: $(STATICCHECK)
+.PHONY: lint_old
+lint_old: $(STATICCHECK)
 	@rm -rf lint.log
 	@echo "Checking formatting..."
 	@gofmt -d -s $(GO_FILES) 2>&1 | tee lint.log

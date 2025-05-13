@@ -88,7 +88,7 @@ func (a *Agreement) buildAgreementText(ctx context.Context, agreement entity.Agr
 		return "", err
 	}
 
-	agreementText, err := a.templater.FillTemplate(ctx, template, entity.ToAgreementText(agreement))
+	agreementText, err := a.templater.FillTemplate(template, entity.ToAgreementText(agreement))
 	if err != nil {
 		return "", err
 	}

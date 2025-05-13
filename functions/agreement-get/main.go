@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/aws/aws-lambda-go/lambda"
-	"github.com/dosovma/morosos-be/templater"
 
 	"github.com/dosovma/morosos-be/bus"
 	"github.com/dosovma/morosos-be/clients"
@@ -12,6 +11,7 @@ import (
 	"github.com/dosovma/morosos-be/handlers"
 	"github.com/dosovma/morosos-be/sms"
 	"github.com/dosovma/morosos-be/store"
+	"github.com/dosovma/morosos-be/templater"
 )
 
 func main() {
@@ -21,7 +21,7 @@ func main() {
 	apartmentDomain := domain.NewApartmentDomain(apartmentStore, clients.NewTuyaClient(), smsClient)
 	eventBridge := bus.NewEventBridgeBus(apartmentDomain)
 	templateStore := store.NewTemplateDynamoDBStore(context.TODO(), "templates")
-	htmlTemplater := templater.NewHtmlTemplater()
+	htmlTemplater := templater.NewHTMLTemplater()
 	agreementDomain := domain.NewAgreementDomain(agreementStore, apartmentStore, templateStore, eventBridge, clients.NewTuyaClient(), htmlTemplater)
 	handler := handlers.NewAgreementHandler(agreementDomain)
 
