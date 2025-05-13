@@ -15,9 +15,10 @@ type Apartment struct {
 }
 
 type Device struct {
-	ID   string `dynamodbav:"id" json:"id"`
-	Name string `dynamodbav:"name" json:"name"`
-	IsOn bool   `dynamodbav:"on" json:"on"`
+	ID          string  `dynamodbav:"id" json:"id"`
+	Name        string  `dynamodbav:"name" json:"name"`
+	IsOn        bool    `dynamodbav:"on" json:"on"`
+	PhoneNumber *string `dynamodbav:"phone_number" json:"phone_number"`
 }
 
 type ApartmentRange struct {

@@ -10,13 +10,15 @@ import (
 	"github.com/dosovma/morosos-be/clients"
 	"github.com/dosovma/morosos-be/domain"
 	"github.com/dosovma/morosos-be/handlers"
+	"github.com/dosovma/morosos-be/sms"
 	"github.com/dosovma/morosos-be/store"
 )
 
 func main() {
 	agreementStore := store.NewAgreementDynamoDBStore(context.TODO(), "agreements")
 	apartmentStore := store.NewApartmentDynamoDBStore(context.TODO(), "apartments")
-	apartmentDomain := domain.NewApartmentDomain(apartmentStore, clients.NewTuyaClient())
+	smsClient := sms.NewSMSClient(context.TODO())
+	apartmentDomain := domain.NewApartmentDomain(apartmentStore, clients.NewTuyaClient(), smsClient)
 	eventBridge := bus.NewEventBridgeBus(apartmentDomain)
 	templateStore := store.NewTemplateDynamoDBStore(context.TODO(), "templates")
 	htmlTemplater := templater.NewHtmlTemplater()

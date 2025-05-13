@@ -36,27 +36,28 @@ Content-Type: application/json
 
 {
   "landlord": {
-    "name": "Andrey",
-    "surname": "Strepetov"
+    "name": "Aleksandra",
+    "surname": "Dosova"
   },
-  "address": "Carrer de la Partida de Palmers, 3, 46701 Gandia, Valencia, España",
+  "address": "Calle Benicanena 28, p05 05, 46701 Gandia, Valencia, España",
   "devices": [
     {
-      "id": "vdevo174111102058365",
+      "id": "",
       "name": "Electricidad",
-      "on": false
+      "on": false,
+      "phone_number": "+34685372338"
     }
   ]
 }
 
 ###
-GET https://gtw06or8tl.execute-api.eu-north-1.amazonaws.com/test/api/v1/apartments/e1b07353-31fe-4341-a5aa-d07bfe951915
+GET https://gtw06or8tl.execute-api.eu-north-1.amazonaws.com/test/api/v1/apartments/80b3997c-e749-4940-8f8e-8cb274ad1835
 
 ###
 GET https://gtw06or8tl.execute-api.eu-north-1.amazonaws.com/test/api/v1/apartments
 
 ###
-POST https://gtw06or8tl.execute-api.eu-north-1.amazonaws.com/test/api/v1/apartments/e1b07353-31fe-4341-a5aa-d07bfe951915/statuses
+POST https://gtw06or8tl.execute-api.eu-north-1.amazonaws.com/test/api/v1/apartments/80b3997c-e749-4940-8f8e-8cb274ad1835/statuses
 Content-Type: application/json
 
 {

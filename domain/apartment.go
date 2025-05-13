@@ -18,12 +18,14 @@ var _ ports.Apartment = (*Apartment)(nil)
 type Apartment struct {
 	store      ports.ApartmentStore
 	tyuaClient ports.TuyaClient
+	smsClient  ports.SmsSender
 }
 
-func NewApartmentDomain(s ports.ApartmentStore, t ports.TuyaClient) *Apartment {
+func NewApartmentDomain(s ports.ApartmentStore, t ports.TuyaClient, smsClient ports.SmsSender) *Apartment {
 	return &Apartment{
 		store:      s,
 		tyuaClient: t,
+		smsClient:  smsClient,
 	}
 }
 
@@ -57,9 +59,7 @@ func (a *Apartment) SwitchDevices(ctx context.Context, id string, isOn bool) err
 	}
 
 	for i, device := range apartment.Devices {
-		if err = a.tyuaClient.PostDevice(device.ID, isOn); err != nil {
-			log.Printf("failed to switch device ::: %s", device.ID)
-
+		if err = a.switchDevice(ctx, device, isOn); err != nil {
 			return err
 		}
 
@@ -82,4 +82,29 @@ func (a *Apartment) GetAllApartment(ctx context.Context, next *string) (entity.A
 	}
 
 	return apartmentRange, nil
+}
+
+func (a *Apartment) switchDevice(ctx context.Context, device entity.Device, isOn bool) error {
+	if device.PhoneNumber != nil && *device.PhoneNumber != "" {
+		message := entity.ApartmentOff
+		if isOn {
+			message = entity.ApartmentOn
+		}
+
+		if err := a.smsClient.Send(ctx, *device.PhoneNumber, message); err != nil {
+			log.Printf("failed to switch device by sms ::: %s", device.ID)
+
+			return err
+		}
+
+		return nil
+	}
+
+	if err := a.tyuaClient.PostDevice(device.ID, isOn); err != nil {
+		log.Printf("failed to switch device ::: %s", device.ID)
+
+		return err
+	}
+
+	return nil
 }

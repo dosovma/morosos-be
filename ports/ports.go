@@ -51,3 +51,7 @@ type Bus interface {
 type Templater interface {
 	FillTemplate(context.Context, string, any) (string, error)
 }
+
+type SmsSender interface {
+	Send(context.Context, string, string) error
+}

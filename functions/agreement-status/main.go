@@ -9,6 +9,7 @@ import (
 	"github.com/dosovma/morosos-be/clients"
 	"github.com/dosovma/morosos-be/domain"
 	"github.com/dosovma/morosos-be/handlers"
+	"github.com/dosovma/morosos-be/sms"
 	"github.com/dosovma/morosos-be/store"
 	"github.com/dosovma/morosos-be/templater"
 )
@@ -18,7 +19,8 @@ func main() {
 	apartmentStore := store.NewApartmentDynamoDBStore(context.TODO(), "apartments")
 	templateStore := store.NewTemplateDynamoDBStore(context.TODO(), "templates")
 	htmlTemplater := templater.NewHtmlTemplater()
-	apartmentDomain := domain.NewApartmentDomain(apartmentStore, clients.NewTuyaClient())
+	smsClient := sms.NewSMSClient(context.TODO())
+	apartmentDomain := domain.NewApartmentDomain(apartmentStore, clients.NewTuyaClient(), smsClient)
 	eventBridge := bus.NewEventBridgeBus(apartmentDomain)
 
 	agreementDomain := domain.NewAgreementDomain(agreementStore, apartmentStore, templateStore, eventBridge, clients.NewTuyaClient(), htmlTemplater)
