@@ -1,6 +1,8 @@
 package clients
 
 import (
+	"log"
+
 	tuyasdk "github.com/iot-eco-system/tuya-iot-service-sdk"
 	"github.com/iot-eco-system/tuya-iot-service-sdk/model"
 
@@ -16,6 +18,7 @@ func NewTuyaClient() *TuyaClient {
 }
 
 func (*TuyaClient) PostDevice(id string, isOn bool) error {
+	log.Println("tuya starts")
 	client := tuyasdk.NewTuyaAPIClient(
 		tuyasdk.NewTuyaAPIClientOptions{
 			Host:     "https://openapi.tuyaeu.com",
@@ -37,10 +40,16 @@ func (*TuyaClient) PostDevice(id string, isOn bool) error {
 
 	_, err := client.DeviceSendCommands(req)
 	if err != nil {
+		client.Stop()
+
+		log.Printf("failed to process command ::: %s", err)
+
 		return err
 	}
 
 	client.Stop()
+
+	log.Println("tuya command executed")
 
 	return nil
 }
@@ -51,6 +60,13 @@ func buildCmd(deviceID string, isOn bool) []model.DeviceProperty {
 		return []model.DeviceProperty{
 			{
 				Code:  "switch_led_1",
+				Value: isOn,
+			},
+		}
+	case "bf4f1d68db7f487077qsfd":
+		return []model.DeviceProperty{
+			{
+				Code:  "switch_1",
 				Value: isOn,
 			},
 		}

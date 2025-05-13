@@ -58,12 +58,14 @@ func (a *Apartment) SwitchDevices(ctx context.Context, id string, isOn bool) err
 
 	for i, device := range apartment.Devices {
 		if err = a.tyuaClient.PostDevice(device.ID, isOn); err != nil {
-			log.Printf("failed to turn on device ::: %s", device.ID)
+			log.Printf("failed to switch device ::: %s", device.ID)
 
 			return err
 		}
 
 		apartment.Devices[i].IsOn = isOn
+
+		log.Println("device status changed")
 	}
 
 	return a.store.ApartmentPut(ctx, *apartment)

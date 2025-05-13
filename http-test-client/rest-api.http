@@ -50,13 +50,13 @@ Content-Type: application/json
 }
 
 ###
-GET https://gtw06or8tl.execute-api.eu-north-1.amazonaws.com/test/api/v1/apartments/e3abab76-6c94-419f-a7de-e97a01af62db
+GET https://gtw06or8tl.execute-api.eu-north-1.amazonaws.com/test/api/v1/apartments/e1b07353-31fe-4341-a5aa-d07bfe951915
 
 ###
 GET https://gtw06or8tl.execute-api.eu-north-1.amazonaws.com/test/api/v1/apartments
 
 ###
-POST https://gtw06or8tl.execute-api.eu-north-1.amazonaws.com/test/api/v1/apartments/e3abab76-6c94-419f-a7de-e97a01af62db/statuses
+POST https://gtw06or8tl.execute-api.eu-north-1.amazonaws.com/test/api/v1/apartments/e1b07353-31fe-4341-a5aa-d07bfe951915/statuses
 Content-Type: application/json
 
 {
